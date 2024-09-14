@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Justwish.Users.Domain.Entities;
+namespace Justwish.Users.Domain;
 
 public sealed class User
 {
