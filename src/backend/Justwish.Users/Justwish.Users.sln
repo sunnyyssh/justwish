@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Justwish.Users.Domain", "Justwish.Users.Domain\Justwish.Users.Domain.csproj", "{5160B385-9CEA-4CFF-9C62-866B79C9A3BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Justwish.Users.Application", "Justwish.Users.Application\Justwish.Users.Application.csproj", "{5BF85094-74D3-4161-BB63-FEC2CEFE120B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{5160B385-9CEA-4CFF-9C62-866B79C9A3BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5160B385-9CEA-4CFF-9C62-866B79C9A3BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5160B385-9CEA-4CFF-9C62-866B79C9A3BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BF85094-74D3-4161-BB63-FEC2CEFE120B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BF85094-74D3-4161-BB63-FEC2CEFE120B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BF85094-74D3-4161-BB63-FEC2CEFE120B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BF85094-74D3-4161-BB63-FEC2CEFE120B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
