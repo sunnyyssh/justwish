@@ -1,6 +1,6 @@
 ﻿using Justwish.Users.Domain.Interfaces;
 
-namespace Justwish.Users.Domain;
+namespace Justwish.Users.Application;
 
 public sealed class DefaultUserBusinessRulePredicates : IUserBusinessRulePredicates
 {
