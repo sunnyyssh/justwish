@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Justwish.Users.Infrastructu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Justwish.Users.WebApi", "Justwish.Users.WebApi\Justwish.Users.WebApi.csproj", "{552590D3-5ECC-4839-A03A-2A20D90C726C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Justwish.Users.UnitTests", "Justwish.Users.UnitTests\Justwish.Users.UnitTests.csproj", "{424154D5-3EC8-4301-9494-0D9D01065998}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{552590D3-5ECC-4839-A03A-2A20D90C726C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{552590D3-5ECC-4839-A03A-2A20D90C726C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{552590D3-5ECC-4839-A03A-2A20D90C726C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{424154D5-3EC8-4301-9494-0D9D01065998}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{424154D5-3EC8-4301-9494-0D9D01065998}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{424154D5-3EC8-4301-9494-0D9D01065998}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{424154D5-3EC8-4301-9494-0D9D01065998}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
