@@ -2,7 +2,9 @@
 
 public sealed class EmailVerificationOptions
 {
-    public int CodeLifetimeSeconds { get; set; } = 60;
-
     public int CodeLength { get; set; } = 4;
+    
+    public int CodePersistenceSeconds { get; set; } = 60;
+
+    public int VerifiedPersistenceSeconds { get; set; } = 300;
 }

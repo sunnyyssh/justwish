@@ -2,5 +2,5 @@
 
 public interface IEmailVerificationChecker
 {
-    public bool VerifyEmail(string email, int code);
+    public Task<EmailVerificationStatus> GetStatusAsync(string email);
 }
