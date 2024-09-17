@@ -28,10 +28,15 @@ public sealed class SendEmailVerificationHandler : ICommandHandler<SendEmailVeri
             return Result.Error();
         }
         
+        _logger.LogInformation("Issued new verification code for {Email}", request.Email);
+
+        
         var sendEmailRequest = new SendEmailVerificationRequest(request.Email, code);
         var sendEmailResponse =
             await _requestClient.GetResponse<SendEmailVerificationResponse>(sendEmailRequest, cancellationToken);
-
+        
+        _logger.LogInformation("Sent email verification request for {Email}", request.Email);
+        
         return sendEmailResponse.Message.Success
             ? Result.Success()
             : Result.Error("Failed to send email verification code");

@@ -15,7 +15,7 @@ public static class DependencyInjection
         
         services.Configure<EmailVerificationOptions>(opts =>
         {
-            configuration.GetSection("EmailVerificationOptions").Bind(opts);
+            configuration.GetRequiredSection("EmailVerificationOptions").Bind(opts);
         });
         
         return services;

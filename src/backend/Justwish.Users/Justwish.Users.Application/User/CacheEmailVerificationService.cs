@@ -1,6 +1,7 @@
 ﻿using Ardalis.Result;
 using Justwish.Users.Domain;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Justwish.Users.Application;
@@ -12,13 +13,15 @@ public sealed class CacheEmailVerificationService : IEmailVerificationService
     
     private readonly IDistributedCache _cache;
     private readonly IVerificationCodeGenerator _generator;
+    private readonly ILogger<CacheEmailVerificationService> _logger;
     private readonly EmailVerificationOptions _options;
 
     public CacheEmailVerificationService(IDistributedCache cache, IVerificationCodeGenerator generator, 
-        IOptions<EmailVerificationOptions> options)
+        IOptions<EmailVerificationOptions> options, ILogger<CacheEmailVerificationService> logger)
     {
         _cache = cache;
         _generator = generator;
+        _logger = logger;
         _options = options.Value;
     }
     
@@ -35,7 +38,7 @@ public sealed class CacheEmailVerificationService : IEmailVerificationService
         
         string statusKey = StatusPrefix + email;
         await _cache.SetStringAsync(statusKey, EmailVerificationStatus.WaitingForVerification.ToString(), cacheOptions);
-
+        
         return code;
     }
     

@@ -38,7 +38,7 @@ public sealed class CreateUserHandler : ICommandHandler<CreateUserCommand, Resul
         
         User user = new()
         {
-            Username = request.Email,
+            Username = request.Username.ToLower(),
             Email = request.Email,
             PasswordHash = passwordHash,
         };

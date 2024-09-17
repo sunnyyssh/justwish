@@ -1,8 +1,6 @@
 ﻿using Ardalis.Result;
 using Justwish.Users.Domain;
 using Justwish.Users.Domain.Interfaces;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
 
 namespace Justwish.Users.Application;
 
