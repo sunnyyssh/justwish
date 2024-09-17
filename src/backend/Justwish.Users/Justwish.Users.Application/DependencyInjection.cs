@@ -12,6 +12,9 @@ public static class DependencyInjection
         
         services.AddScoped<IVerificationCodeGenerator, DefaultVerificationCodeGenerator>();
         services.AddScoped<IEmailVerificationService, CacheEmailVerificationService>();
+        services.AddScoped<IEmailVerificationIssuer>(sp => sp.GetRequiredService<IEmailVerificationService>());
+        services.AddScoped<IEmailVerificationChecker>(sp => sp.GetRequiredService<IEmailVerificationService>());
+        services.AddScoped<IEmailVerifier>(sp => sp.GetRequiredService<IEmailVerificationService>());
         
         services.Configure<EmailVerificationOptions>(opts =>
         {

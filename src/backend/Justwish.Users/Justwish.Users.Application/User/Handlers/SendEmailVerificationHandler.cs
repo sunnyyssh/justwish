@@ -34,11 +34,14 @@ public sealed class SendEmailVerificationHandler : ICommandHandler<SendEmailVeri
         var sendEmailRequest = new SendEmailVerificationRequest(request.Email, code);
         var sendEmailResponse =
             await _requestClient.GetResponse<SendEmailVerificationResponse>(sendEmailRequest, cancellationToken);
+
+        if (!sendEmailResponse.Message.Success)
+        {
+            _logger.LogError("Failed to send email verification for {Email}", request.Email);
+            return Result.Error("Failed to send email verification code");
+        }
         
-        _logger.LogInformation("Sent email verification request for {Email}", request.Email);
-        
-        return sendEmailResponse.Message.Success
-            ? Result.Success()
-            : Result.Error("Failed to send email verification code");
+        _logger.LogInformation("Sent email verification for {Email}", request.Email);
+        return Result.Success();
     }
 }
