@@ -13,4 +13,9 @@
       <ProjectReference Include="..\Justwish.Users.Infrastructure\Justwish.Users.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FastEndpoints" Version="5.29.0.3-beta" />
+      <PackageReference Include="MassTransit" Version="8.2.6-develop.1998" />
+    </ItemGroup>
+
 </Project>

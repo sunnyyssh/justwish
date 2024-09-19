@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Justwish.Users.Application;
 
-public sealed class CreateUserHandler : ICommandHandler<CreateUserCommand, Result<UserDto>>
+public sealed class CreateUserHandler : ICommandHandler<CreateUserCommand, CreateUserResponse>
 {
     private readonly IUserRepository _repository;
     private readonly IEmailVerificationChecker _verificationChecker;
@@ -25,13 +25,13 @@ public sealed class CreateUserHandler : ICommandHandler<CreateUserCommand, Resul
         _logger = logger;
     }
     
-    public async Task<Result<UserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<CreateUserResponse> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var verificationStatus = await _verificationChecker.GetStatusAsync(request.Email);
         if (verificationStatus != EmailVerificationStatus.Verified)
         {
             _logger.LogInformation("Email {Email} is not verified but attempted to create user", request.Email);
-            return Result.Error("Email is not verified");
+            return CreateUserResponse.EmailNotVerified();
         }
         
         string passwordHash = _passwordHasher.Hash(request.Password);
@@ -49,7 +49,7 @@ public sealed class CreateUserHandler : ICommandHandler<CreateUserCommand, Resul
         {
             _logger.LogError("Failed to create user with {Username} username and {Email} email", user.Username,
                 user.Email);
-            return addResult;
+            throw new InvalidOperationException("Can't create user");
         }
 
         _logger.LogInformation("{Username} {Email} user is created", user.Username, user.Email);
@@ -57,6 +57,6 @@ public sealed class CreateUserHandler : ICommandHandler<CreateUserCommand, Resul
         var userCreatedEvent = new UserCreatedEvent(user.Id, user.Username, user.Email);
         await _publisher.Publish(userCreatedEvent, cancellationToken);
         
-        return Result.Success(UserDto.FromDomain(user));
+        return CreateUserResponse.Success(UserDto.FromDomain(user));
     }
 }

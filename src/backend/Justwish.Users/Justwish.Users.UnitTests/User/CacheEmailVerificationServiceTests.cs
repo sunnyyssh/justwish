@@ -2,6 +2,7 @@
 using Justwish.Users.Domain;
 using MassTransit.Configuration;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 
@@ -83,8 +84,10 @@ public sealed class CacheEmailVerificationServiceTests
         var codeGeneratorMock = MockCodeGeneratorReturns(generatingCode);
         var cacheMock = MockCacheWithDict(cacheStore);
         var optionsMock = MockOptions(new EmailVerificationOptions { CodeLength = codeLength });
-        
-        return new CacheEmailVerificationService(cacheMock.Object, codeGeneratorMock.Object, optionsMock.Object);
+        var loggerMock = new Mock<ILogger<CacheEmailVerificationService>>();
+
+        return new CacheEmailVerificationService(cacheMock.Object, codeGeneratorMock.Object, optionsMock.Object,
+            loggerMock.Object);
     }
 
     private static Mock<IVerificationCodeGenerator> MockCodeGeneratorReturns(int code)
