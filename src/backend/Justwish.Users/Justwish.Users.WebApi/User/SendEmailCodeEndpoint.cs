@@ -20,6 +20,7 @@ public sealed class SendEmailCodeEndpoint : Endpoint<SendEmailCodeEndpoint.Email
     {
         Post("/registration/send-email-code");
         Validator<EmailRequestValidator>();
+        AllowAnonymous();
     }
 
 

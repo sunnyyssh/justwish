@@ -16,6 +16,10 @@
     <ItemGroup>
       <PackageReference Include="FastEndpoints" Version="5.29.0.3-beta" />
       <PackageReference Include="MassTransit" Version="8.2.6-develop.1998" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0-rc.1.24451.1">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
 </Project>

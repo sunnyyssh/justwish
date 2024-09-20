@@ -23,6 +23,7 @@ public sealed class VerifyEmailCodeEndpoint
     {
         Post("registration/verify-email-code");
         Validator<EmailCodeRequestValidator>();
+        AllowAnonymous();
     }
 
     public override async Task<Ok<VerificationStatusResponse>> ExecuteAsync(EmailCodeRequest req, CancellationToken ct)

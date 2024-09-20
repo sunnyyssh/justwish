@@ -1,4 +1,5 @@
 ﻿using Justwish.Users.Domain;
+using Justwish.Users.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +16,8 @@ public static class DependencyInjection
         services.AddScoped<IEmailVerificationIssuer>(sp => sp.GetRequiredService<IEmailVerificationService>());
         services.AddScoped<IEmailVerificationChecker>(sp => sp.GetRequiredService<IEmailVerificationService>());
         services.AddScoped<IEmailVerifier>(sp => sp.GetRequiredService<IEmailVerificationService>());
+
+        services.AddScoped<IUserBusinessRulePredicates, DefaultUserBusinessRulePredicates>();
         
         services.Configure<EmailVerificationOptions>(opts =>
         {

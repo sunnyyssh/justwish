@@ -15,16 +15,14 @@ public static class DependencyInjection
         {
             opts.Configuration = configuration.GetConnectionString("RedisConnection");
         });
-        
-        services.AddDbContext<ApplicationDbContext>(opts =>
+
+        if (!environment.IsEnvironment("Test"))
         {
-            if (environment.IsDevelopment())
+            services.AddDbContext<ApplicationDbContext>(opts =>
             {
-                opts.EnableSensitiveDataLogging();
-                opts.UseAsyncSeeding(SeedDevelopmentData.SeedAsync);
-            }
-            opts.UseNpgsql(configuration.GetConnectionString("ApplicationConnection"));
-        });
+                opts.UseNpgsql(configuration.GetConnectionString("ApplicationConnection"));
+            });
+        }
 
         services.AddScoped<IUserRepository, EfUserRepository>();
         services.AddScoped<IUserReadRepository>(sp => sp.GetRequiredService<IUserRepository>()); 

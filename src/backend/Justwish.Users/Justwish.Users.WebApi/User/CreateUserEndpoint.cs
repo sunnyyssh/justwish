@@ -26,6 +26,7 @@ public sealed class CreateUserEndpoint
     {
         Post("registration/create");
         Validator<RegistrationRequestValidator>();
+        AllowAnonymous();
     }
 
     public override async Task<Results<Ok<RegisteredResponse>, BadRequest<string>>> 
@@ -50,8 +51,8 @@ public sealed class CreateUserEndpoint
             RuleFor(x => x.Username)
                 .MinimumLength(3)
                 .MaximumLength(32)
-                .Matches(@"^[a-zA-Z0-9_]+$")
-                .WithMessage("Username must contain only alphanumeric characters and underscores")
+                .Matches(@"^[a-z0-9_]+$")
+                .WithMessage("Username must contain only lowercase alphanumeric characters and underscores")
                 .MustAsync(async (username, _) => await rulePredicates.IsUsernameFree(username))
                 .WithMessage("Username is not free");
             

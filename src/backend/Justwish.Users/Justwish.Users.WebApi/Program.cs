@@ -12,6 +12,9 @@ builder.Services
     .AddApplication(builder.Configuration)
     .AddInfrastructure(builder.Configuration, builder.Environment);
 
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+
 builder.Services.AddMediatR(config =>
 {
     config.RegisterServicesFromAssembly(typeof(CreateUserCommand).Assembly);
@@ -33,7 +36,10 @@ var app = builder.Build();
 
 app.MapFastEndpoints();
 
-MigrateDatabase(app);
+if (app.Environment.IsDevelopment())
+{
+    MigrateDatabase(app);
+}
 
 app.Run();
 return;
@@ -49,3 +55,5 @@ static void MigrateDatabase(WebApplication app)
         dbContext.Database.Migrate();
     }
 }
+
+public partial class Program; 
