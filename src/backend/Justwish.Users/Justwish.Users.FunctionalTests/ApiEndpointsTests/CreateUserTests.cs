@@ -1,7 +1,9 @@
 ﻿using System.Net;
 using FastEndpoints;
+using Justwish.Users.Contracts;
 using Justwish.Users.Domain;
 using Justwish.Users.WebApi;
+using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Justwish.Users.FunctionalTests;
@@ -12,10 +14,13 @@ public sealed class CreateUserTests : IAsyncDisposable
     
     private readonly TestWebApplicationFactory _factory;
 
+    private readonly ITestHarness _testHarness;
+
     public CreateUserTests()
     {
         _factory = new TestWebApplicationFactory();
         _client = _factory.CreateClient();
+        _testHarness = _factory.Services.GetRequiredService<ITestHarness>();
     }
 
     [Theory]
@@ -57,6 +62,28 @@ public sealed class CreateUserTests : IAsyncDisposable
         Assert.Equal(HttpStatusCode.OK, response.Response.StatusCode);
         Assert.NotNull(response.Result.UserId);
         Assert.NotEqual(Guid.Empty, response.Result.UserId.Value);
+    }
+
+    [Fact]
+    public async Task Publishes_UserCreatedEvent()
+    {
+        // Arrange
+        const string email = "justwish@gmail.com";
+        const string username = "justwish";
+        const string password = "passwordSuperPuper_123";
+        
+        var verificationService = _factory.Services.GetRequiredService<IEmailVerificationService>();
+        
+        var code = await verificationService.IssueCodeAsync(email);
+        await verificationService.VerifyEmailAsync(email, code);
+
+        // Act
+        var response = await _client.POSTAsync<CreateUserEndpoint,
+            CreateUserEndpoint.RegistrationRequest, CreateUserEndpoint.RegisteredResponse>(
+            new CreateUserEndpoint.RegistrationRequest(username, email, password));
+
+        // Assert
+        Assert.True(await _testHarness.Published.Any<UserCreatedEvent>());
     }
 
     [Fact]
