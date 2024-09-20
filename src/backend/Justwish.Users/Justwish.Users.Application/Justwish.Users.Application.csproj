@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Justwish.Users.Contracts\Justwish.Users.Contracts.csproj" />
+      <ProjectReference Include="..\Justwish.Users.Domain\Justwish.Users.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MassTransit" Version="8.2.6-develop.1998" />
+      <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.0-rc.1.24431.7" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0-rc.1.24431.7" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="User\Commands\CreateUserResponse.cs">
+        <DependentUpon>CreateUserCommand.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+</Project>
