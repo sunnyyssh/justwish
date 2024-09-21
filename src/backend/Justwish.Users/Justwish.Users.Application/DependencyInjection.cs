@@ -17,13 +17,22 @@ public static class DependencyInjection
         services.AddScoped<IEmailVerificationChecker>(sp => sp.GetRequiredService<IEmailVerificationService>());
         services.AddScoped<IEmailVerifier>(sp => sp.GetRequiredService<IEmailVerificationService>());
 
-        services.AddScoped<IUserBusinessRulePredicates, DefaultUserBusinessRulePredicates>();
-        
         services.Configure<EmailVerificationOptions>(opts =>
         {
             configuration.GetRequiredSection("EmailVerificationOptions").Bind(opts);
         });
         
+        services.AddScoped<IUserBusinessRulePredicates, DefaultUserBusinessRulePredicates>();
+
+        services.AddScoped<IJwtEncoder, JwtEncoder>();
+        services.AddScoped<IJwtRefreshTokenStorage, CacheRefreshTokenStorage>();
+        services.AddScoped<IJwtService, JwtService>();
+
+        services.Configure<JwtOptions>(opts =>
+        {
+            configuration.GetSection("JwtOptions").Bind(opts);
+        });
+
         return services;
     }
 }
