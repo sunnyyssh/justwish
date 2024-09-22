@@ -79,7 +79,7 @@ public sealed class VerifyEmailTests : IAsyncDisposable
     public async Task FailsValidation_EmailInUse()
     {
         // Arrange
-        string email = SeedTestData.User1.Email;
+        string email = TestData.User1.Email;
         
         // Act
         var response = await _client.POSTAsync<SendEmailCodeEndpoint, SendEmailCodeEndpoint.EmailRequest,

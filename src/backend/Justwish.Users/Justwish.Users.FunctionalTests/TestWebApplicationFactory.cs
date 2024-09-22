@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -26,7 +29,7 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
             dbContext.Database.Migrate();
         }
         dbContext.Database.EnsureCreated();
-        SeedTestData.PopulateTestData(dbContext);
+        TestData.PopulateTestData(dbContext);
 
         return host;
     }
@@ -34,6 +37,20 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Test");
+        
+        builder.ConfigureAppConfiguration(c =>
+        {
+            c.Add(new MemoryConfigurationSource
+            {
+                InitialData = new Dictionary<string, string?>
+                {
+                    { "JwtOptions:SecretKey", "C7981F6E-C45E-430D-8BDC-334EDC68584C" },
+                    { "Issuer", "TestIssuer" },
+                    { "Audience", "TestAudience" },
+                }
+            });
+        });
+        
         builder.ConfigureServices(services =>
         {
             var dbContextDescriptor =

@@ -82,8 +82,8 @@ public sealed class CacheEmailVerificationServiceTests
         Dictionary<string, byte[]> cacheStore, int codeLength)
     {
         var codeGeneratorMock = MockCodeGeneratorReturns(generatingCode);
-        var cacheMock = MockCacheWithDict(cacheStore);
-        var optionsMock = MockOptions(new EmailVerificationOptions { CodeLength = codeLength });
+        var cacheMock = MockHelpers.MockCacheWithDict(cacheStore);
+        var optionsMock = MockHelpers.MockOptions(new EmailVerificationOptions { CodeLength = codeLength });
         var loggerMock = new Mock<ILogger<CacheEmailVerificationService>>();
 
         return new CacheEmailVerificationService(cacheMock.Object, codeGeneratorMock.Object, optionsMock.Object,
@@ -94,32 +94,6 @@ public sealed class CacheEmailVerificationServiceTests
     {
         var mock = new Mock<IVerificationCodeGenerator>();
         mock.Setup(c => c.GenerateCode()).Returns(code);
-        return mock;
-    }
-
-    private static Mock<IDistributedCache> MockCacheWithDict(IDictionary<string, byte[]> dict)
-    {
-        var mock = new Mock<IDistributedCache>();
-        
-        mock.Setup(c => 
-                c.SetAsync(
-                    It.IsAny<string>(), 
-                    It.IsAny<byte[]>(),
-                    It.IsAny<DistributedCacheEntryOptions>(),
-                    It.IsAny<CancellationToken>()))
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-            .Returns(async (string key, byte[] value, DistributedCacheEntryOptions _, CancellationToken _) => dict[key] = value);
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-        
-        mock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string key, CancellationToken _) => dict[key]);
-        return mock;
-    }
-
-    private static Mock<IOptions<EmailVerificationOptions>> MockOptions(EmailVerificationOptions options)
-    {
-        var mock = new Mock<IOptions<EmailVerificationOptions>>();
-        mock.SetupGet(c => c.Value).Returns(options);
         return mock;
     }
 }
