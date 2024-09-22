@@ -5,8 +5,16 @@ using Justwish.Users.Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, config) =>
+{
+    config
+        .Enrich.FromLogContext()
+        .ReadFrom.Configuration(context.Configuration);
+});
 
 builder.Services
     .AddApplication(builder.Configuration)
