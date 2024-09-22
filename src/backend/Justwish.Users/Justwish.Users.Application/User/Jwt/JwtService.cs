@@ -4,6 +4,7 @@ using Justwish.Users.Domain;
 using Justwish.Users.Domain.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Justwish.Users.Application;
 
@@ -46,8 +47,14 @@ public sealed class JwtService : IJwtService
         
         await _refreshTokenStorage.RemoveAsync(refreshToken);
 
-        var claims = _encoder.DecodeToken(refreshToken);
+        var claims = _encoder.DecodeToken(refreshToken).ToList();
         var userId = Guid.Parse(claims.Single(c => c.Type == JwtRegisteredClaimNames.Sub).Value);
+        var expirationTime = long.Parse(claims.Single(c => c.Type == JwtRegisteredClaimNames.Exp).Value);
+        
+        if (expirationTime < EpochTime.GetIntDate(DateTime.UtcNow))
+        {
+            return Result.Error("Token expired.");
+        }
         
         var user = await _userReadRepository.GetUserByIdAsync(userId);
         if (!user.IsSuccess)

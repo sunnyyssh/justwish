@@ -21,7 +21,7 @@ public sealed class SignInEndpoint : Endpoint<SignInEndpoint.SignInRequest, Resu
     
     public override void Configure()
     {
-        Post("/auth/signin");
+        Post("auth/signin");
         AllowAnonymous();
         Validator<SignInValidator>();
     }

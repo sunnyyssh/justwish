@@ -18,7 +18,8 @@ public sealed class JwtServiceTests
         var options = CreateMockOptions();
         
         var service = new JwtService(
-            MockJwtEncoder().Object, 
+            // Here IJwtEncoder is not mocked because mocking requires just repeating JwtEncoder's logic which is tested btw 
+            new JwtEncoder(options),
             mockStorage.Object, 
             new MockUserRepository([TestUser]), 
             options);
@@ -38,7 +39,8 @@ public sealed class JwtServiceTests
         var options = CreateMockOptions();
         
         var service = new JwtService(
-            MockJwtEncoder().Object, 
+            // Here IJwtEncoder is not mocked because mocking requires just repeating JwtEncoder's logic which is tested btw 
+            new JwtEncoder(options),
             mockStorage.Object, 
             new MockUserRepository([TestUser]), 
             options);
@@ -61,7 +63,8 @@ public sealed class JwtServiceTests
         var options = CreateMockOptions();
         
         var service = new JwtService(
-            MockJwtEncoder().Object, 
+            // Here IJwtEncoder is not mocked because mocking requires just repeating JwtEncoder's logic which is tested btw 
+            new JwtEncoder(options),
             mockStorage.Object, 
             new MockUserRepository([TestUser]), 
             options);
@@ -69,6 +72,31 @@ public sealed class JwtServiceTests
         // Act
         var (access, _) = await service.IssueAsync(TestUser);
         var refreshed = await service.RefreshAsync(access); // Must be refresh token.
+        
+        // Assert
+        Assert.False(refreshed.IsSuccess);
+    }
+
+    [Fact]
+    public async Task Doesnt_Refresh_With_ExpiredToken()
+    {
+        // Arrange
+        var mockStorage = MockStorage();
+        var options = CreateMockOptions(refreshExpirationTime: TimeSpan.FromMilliseconds(1200));
+        
+        var service = new JwtService(
+            // Here IJwtEncoder is not mocked because mocking requires just repeating JwtEncoder's logic which is tested btw 
+            new JwtEncoder(options), 
+            mockStorage.Object, 
+            new MockUserRepository([TestUser]), 
+            options);
+        
+        // Act
+        var (_, refresh) = await service.IssueAsync(TestUser);
+        
+        await Task.Delay(1300); // Token expiration.
+        
+        var refreshed = await service.RefreshAsync(refresh);
         
         // Assert
         Assert.False(refreshed.IsSuccess);
@@ -82,7 +110,8 @@ public sealed class JwtServiceTests
         var options = CreateMockOptions();
         
         var service = new JwtService(
-            MockJwtEncoder().Object, 
+            // Here IJwtEncoder is not mocked because mocking requires just repeating JwtEncoder's logic which is tested btw 
+            new JwtEncoder(options),
             mockStorage.Object, 
             new MockUserRepository([TestUser]), 
             options);
@@ -96,8 +125,6 @@ public sealed class JwtServiceTests
         // Assert
         mockStorage.Verify(x => x.RemoveAsync(jwtToken), Times.Once);
     }
-    
-    
     
     private static Mock<IJwtRefreshTokenStorage> MockStorage()
     {
@@ -118,44 +145,14 @@ public sealed class JwtServiceTests
         return mock;
     }
     
-    private static Mock<IJwtEncoder> MockJwtEncoder()
-    {
-        // It stores claims like it would be stored in encoded token. The token will be just Guid that is key to this dict.
-        var secretDictionary = new Dictionary<string, IEnumerable<Claim>>();
-        
-        var mock = new Mock<IJwtEncoder>();
-        mock.Setup(x => x.CreateToken(It.IsAny<IEnumerable<Claim>>(), It.IsAny<TimeSpan>()))
-            .Returns((IEnumerable<Claim> claims, TimeSpan exp) =>
-            {
-                var imagineItIsToken = Guid.NewGuid().ToString();
-                secretDictionary[imagineItIsToken] = claims;
-                return new JwtToken(imagineItIsToken);
-            });
-
-        mock.Setup(x => x.DecodeToken(It.IsAny<JwtToken>()))
-            .Returns((JwtToken jwtToken) =>
-                secretDictionary.TryGetValue(jwtToken.Token, out var claims) ? claims : []);
-
-        mock.Setup(x => x.ValidateToken(It.IsAny<JwtToken>()))
-            .Callback((JwtToken jwtToken) =>
-            {
-                if (!secretDictionary.TryGetValue(jwtToken.Token, out _))
-                {
-                    throw new Exception("Invalid token");
-                }
-            });
-
-        return mock;
-    }
-    
-    private static IOptions<JwtOptions> CreateMockOptions()
+    private static IOptions<JwtOptions> CreateMockOptions(TimeSpan? refreshExpirationTime = null, TimeSpan? accessExpirationTime = null)
     {
         return MockHelpers.MockOptions(new JwtOptions
         {
             Issuer = "Issuer",
             Audience = "Audience",
-            AccessTokenExpirationTime = TimeSpan.FromMinutes(5),
-            RefreshTokenExpirationTime = TimeSpan.FromDays(7),
+            AccessTokenExpirationTime = accessExpirationTime ?? TimeSpan.FromMinutes(5),
+            RefreshTokenExpirationTime = refreshExpirationTime ?? TimeSpan.FromDays(7),
             SecretKey = "F469CCC469474976AD764A73B57A3B18",
         }).Object;
     }
