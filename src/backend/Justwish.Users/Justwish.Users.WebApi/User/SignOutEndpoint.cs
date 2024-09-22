@@ -1,6 +1,7 @@
 ﻿using FastEndpoints;
 using Justwish.Users.Application;
 using Justwish.Users.Domain;
+using Justwish.Users.WebApi.ApiKeyAuth;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -18,7 +19,7 @@ public sealed class SignOutEndpoint : Endpoint<SignOutEndpoint.SignOutRequest, O
     public override void Configure()
     {
         Post("auth/signout");
-        AllowAnonymous();
+        Policies(ApiKeyConstants.PolicyName);
     }
 
     public override async Task<Ok> ExecuteAsync(SignOutRequest req, CancellationToken ct)

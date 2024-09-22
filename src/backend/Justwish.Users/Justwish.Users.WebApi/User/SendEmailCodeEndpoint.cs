@@ -2,6 +2,7 @@ using FastEndpoints;
 using FluentValidation;
 using Justwish.Users.Application;
 using Justwish.Users.Domain.Interfaces;
+using Justwish.Users.WebApi.ApiKeyAuth;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -20,7 +21,7 @@ public sealed class SendEmailCodeEndpoint : Endpoint<SendEmailCodeEndpoint.Email
     {
         Post("/registration/send-email-code");
         Validator<EmailRequestValidator>();
-        AllowAnonymous();
+        Policies(ApiKeyConstants.PolicyName);
     }
 
 

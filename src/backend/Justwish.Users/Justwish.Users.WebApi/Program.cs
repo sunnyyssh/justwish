@@ -2,7 +2,11 @@ using System.Text.Json;
 using FastEndpoints;
 using Justwish.Users.Application;
 using Justwish.Users.Infrastructure;
+using Justwish.Users.WebApi;
+using Justwish.Users.WebApi.ApiKeyAuth;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -20,8 +24,17 @@ builder.Services
     .AddApplication(builder.Configuration)
     .AddInfrastructure(builder.Configuration, builder.Environment);
 
-builder.Services.AddAuthentication();
-builder.Services.AddAuthorization();
+builder.Services.AddSingleton<IApiKeyValidator, ConfigurationApiKeyValidator>();
+
+// builder.Services.AddAuthentication("Default");
+builder.Services.AddAuthentication(ApiKeyConstants.AuthenticationScheme)
+    .AddScheme<ApiKeySchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyConstants.AuthenticationScheme, null);
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(ApiKeyConstants.PolicyName, policy =>
+    {
+        policy.RequireClaim(ApiKeyConstants.ClaimType);
+        policy.AddAuthenticationSchemes(ApiKeyConstants.AuthenticationScheme);
+    });
 
 builder.Services.AddMediatR(config =>
 {
@@ -33,7 +46,13 @@ builder.Services.AddMassTransit(config =>
     config.UsingInMemory();
 });
 
-builder.Services.AddFastEndpoints();
+builder.Services.AddFastEndpoints(options =>
+{
+    if (!builder.Environment.IsDevelopment())
+    {
+        options.Filter = endpointType => endpointType != typeof(HelloWorldEndpoint);
+    }
+});
 
 builder.Services.Configure<JsonOptions>(opts =>
 {
@@ -41,6 +60,9 @@ builder.Services.Configure<JsonOptions>(opts =>
 });
 
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapFastEndpoints();
 

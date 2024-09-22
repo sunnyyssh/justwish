@@ -4,6 +4,7 @@ using FluentValidation;
 using Justwish.Users.Application;
 using Justwish.Users.Domain;
 using Justwish.Users.Domain.Interfaces;
+using Justwish.Users.WebApi.ApiKeyAuth;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 // ReSharper disable ConvertTypeCheckPatternToNullCheck
@@ -23,7 +24,7 @@ public sealed class SignInEndpoint : Endpoint<SignInEndpoint.SignInRequest, Resu
     {
         Post("auth/signin");
         AllowAnonymous();
-        Validator<SignInValidator>();
+        Policies(ApiKeyConstants.PolicyName);
     }
 
     public override async Task<Results<Ok<SignInResponse>, BadRequest<string>>> ExecuteAsync(SignInRequest req, CancellationToken ct)

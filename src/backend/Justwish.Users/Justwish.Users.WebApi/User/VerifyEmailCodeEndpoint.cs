@@ -2,6 +2,7 @@
 using FluentValidation;
 using Justwish.Users.Application;
 using Justwish.Users.Domain.Interfaces;
+using Justwish.Users.WebApi.ApiKeyAuth;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -23,7 +24,7 @@ public sealed class VerifyEmailCodeEndpoint
     {
         Post("registration/verify-email-code");
         Validator<EmailCodeRequestValidator>();
-        AllowAnonymous();
+        Policies(ApiKeyConstants.PolicyName);
     }
 
     public override async Task<Ok<VerificationStatusResponse>> ExecuteAsync(EmailCodeRequest req, CancellationToken ct)
