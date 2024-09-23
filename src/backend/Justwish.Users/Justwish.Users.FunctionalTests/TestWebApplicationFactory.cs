@@ -1,4 +1,5 @@
 ﻿using Justwish.Users.Infrastructure;
+using Justwish.Users.WebApi.ApiKeyAuth;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -33,7 +34,7 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
 
         return host;
     }
-
+    
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Test");
@@ -44,15 +45,24 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
             {
                 InitialData = new Dictionary<string, string?>
                 {
-                    { "JwtOptions:SecretKey", "C7981F6E-C45E-430D-8BDC-334EDC68584C" },
-                    { "Issuer", "TestIssuer" },
-                    { "Audience", "TestAudience" },
+                    { "JwtOptions:SecretKey", TestConstants.JwtKey },
+                    { "Issuer", TestConstants.JwtIssuer },
+                    { "Audience", TestConstants.JwtAudience },
+                    { "ApiKey:Test", TestConstants.ApiKey }
                 }
             });
         });
         
         builder.ConfigureServices(services =>
         {
+            services.ConfigureHttpClientDefaults(clientBuilder =>
+            {
+                clientBuilder.ConfigureHttpClient(configure =>
+                {
+                    configure.DefaultRequestHeaders.Add(ApiKeyConstants.HeaderName, TestConstants.ApiKey);
+                });
+            });
+            
             var dbContextDescriptor =
                 services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
             if (dbContextDescriptor is not null)
