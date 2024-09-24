@@ -13,9 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, config) =>
 {
-    config
-        .Enrich.FromLogContext()
-        .ReadFrom.Configuration(context.Configuration);
+    config.ReadFrom.Configuration(context.Configuration);
 });
 
 builder.Services

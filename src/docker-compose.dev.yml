@@ -9,6 +9,8 @@ services:
       - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf
     depends_on:
       - users-api
+    networks:
+      - network
 
   users-api: 
     build:
@@ -23,6 +25,20 @@ services:
       ConnectionStrings:ApplicationConnection: Host=postgres;Port=5432;Username=postgres;Password=postgres;Database=Users;
     depends_on:
       - redis
+      - seq
+    networks:
+      - network
+
+  seq:
+    image: datalust/seq
+    ports:
+      - "5341:80"
+    environment:
+      - ACCEPT_EULA=Y
+    volumes:
+      - seq_data:/data
+    networks:
+      - network
 
   redis:
     image: redis:latest
@@ -30,6 +46,8 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    networks:
+      - network
   
   postgres:
     image: postgres:latest
@@ -41,7 +59,14 @@ services:
       - POSTGRES_DB=Users
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - network
   
 volumes:
   redis-data:
   postgres-data:
+  seq_data:
+
+networks:
+  network:
+    driver: bridge
