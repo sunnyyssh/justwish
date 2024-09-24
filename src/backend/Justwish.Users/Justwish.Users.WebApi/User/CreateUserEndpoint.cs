@@ -47,19 +47,27 @@ public sealed class CreateUserEndpoint
     
     public class RegistrationRequestValidator : Validator<RegistrationRequest>
     {
-        public RegistrationRequestValidator(IUserBusinessRulePredicates rulePredicates)
+        public RegistrationRequestValidator()
         {
             RuleFor(x => x.Username)
                 .MinimumLength(3)
                 .MaximumLength(32)
                 .Matches(@"^[a-z0-9_]+$")
                 .WithMessage("Username must contain only lowercase alphanumeric characters and underscores")
-                .MustAsync(async (username, _) => await rulePredicates.IsUsernameFree(username))
+                .MustAsync(async (username, _) =>
+                {
+                    var rulePredicates = Resolve<IUserBusinessRulePredicates>();
+                    return await rulePredicates.IsUsernameFree(username);
+                })
                 .WithMessage("Username is not free");
             
             RuleFor(x => x.Email)
                 .EmailAddress()
-                .MustAsync(async (email, _) => await rulePredicates.IsUserEmailFree(email))
+                .MustAsync(async (email, _) =>
+                {
+                    var rulePredicates = Resolve<IUserBusinessRulePredicates>();
+                    return await rulePredicates.IsUserEmailFree(email);
+                })
                 .WithMessage("Email is not free");
 
             RuleFor(x => x.Password)

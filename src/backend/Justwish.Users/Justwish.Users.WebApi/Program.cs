@@ -5,8 +5,6 @@ using Justwish.Users.Infrastructure;
 using Justwish.Users.WebApi;
 using Justwish.Users.WebApi.ApiKeyAuth;
 using MassTransit;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -43,7 +41,17 @@ builder.Services.AddMediatR(config =>
 
 builder.Services.AddMassTransit(config =>
 {
-    config.UsingInMemory();
+    // ATTENTION: You should make it not like that in the future.
+    if (builder.Environment.IsDevelopment())
+    {
+        config.UsingInMemory((ctx, inMemoryConfigure) =>
+        {
+            inMemoryConfigure.UseDelayedMessageScheduler();
+            inMemoryConfigure.ConfigureEndpoints(ctx);
+        });
+        config.AddConsumer<MockSendEmailVerificationConsumer>();
+        config.SetDefaultRequestTimeout(TimeSpan.FromSeconds(5));
+    }
 });
 
 builder.Services.AddFastEndpoints(options =>

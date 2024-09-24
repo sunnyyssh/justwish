@@ -23,7 +23,6 @@ public sealed class SignInEndpoint : Endpoint<SignInEndpoint.SignInRequest, Resu
     public override void Configure()
     {
         Post("auth/signin");
-        AllowAnonymous();
         Policies(ApiKeyConstants.PolicyName);
     }
 
@@ -51,7 +50,7 @@ public sealed class SignInEndpoint : Endpoint<SignInEndpoint.SignInRequest, Resu
     
     public sealed class SignInValidator : Validator<SignInRequest>
     {
-        public SignInValidator(IUserBusinessRulePredicates predicates)
+        public SignInValidator()
         {
             When(x => string.IsNullOrWhiteSpace(x.Username), () =>
             {
@@ -59,7 +58,11 @@ public sealed class SignInEndpoint : Endpoint<SignInEndpoint.SignInRequest, Resu
                     .NotEmpty()
                     .WithMessage("Email is required if username is empty")
                     .EmailAddress()
-                    .MustAsync(async (email, _) => !await predicates.IsUserEmailFree(email))
+                    .MustAsync(async (email, _) =>
+                    {
+                        var rulePredicates = Resolve<IUserBusinessRulePredicates>();
+                        return !await rulePredicates.IsUserEmailFree(email);
+                    })
                     .WithMessage("User with this email doesn't exist");
             });
 
@@ -70,7 +73,11 @@ public sealed class SignInEndpoint : Endpoint<SignInEndpoint.SignInRequest, Resu
                     .MaximumLength(32)
                     .Matches(@"^[a-z0-9_]+$")
                     .WithMessage("Username must contain only lowercase alphanumeric characters and underscores")
-                    .MustAsync(async (username, _) => !await predicates.IsUsernameFree(username))
+                    .MustAsync(async (username, _) =>
+                    {
+                        var rulePredicates = Resolve<IUserBusinessRulePredicates>();
+                        return !await rulePredicates.IsUsernameFree(username);
+                    })
                     .WithMessage("User with this username doesn't exist");
             });
 
