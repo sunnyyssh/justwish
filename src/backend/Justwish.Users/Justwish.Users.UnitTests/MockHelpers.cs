@@ -1,7 +1,9 @@
-﻿using Justwish.Users.Application;
+﻿using Castle.Core.Logging;
+using Justwish.Users.Application;
 using Justwish.Users.Domain;
 using Justwish.Users.Domain.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 
@@ -9,6 +11,12 @@ namespace Justwish.Users.UnitTests;
 
 public static class MockHelpers
 {
+    public static ILogger<T> MockLogger<T>() 
+    {
+        var mock = new Mock<ILogger<T>>();
+        return mock.Object;
+    }
+
     public static Mock<IDistributedCache> MockCacheWithDict(IDictionary<string, byte[]> dict)
     {
         var mock = new Mock<IDistributedCache>();

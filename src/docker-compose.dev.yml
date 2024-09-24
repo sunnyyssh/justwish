@@ -9,15 +9,12 @@ services:
       - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf
     depends_on:
       - users-api
-    networks:
-      - network
+      - seq
 
   users-api: 
     build:
       context: .
       dockerfile: ./backend/Justwish.Users/Dockerfile
-    ports:
-      - "5001:5001"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:5001
@@ -26,47 +23,29 @@ services:
     depends_on:
       - redis
       - seq
-    networks:
-      - network
 
   seq:
     image: datalust/seq
-    ports:
-      - "5341:80"
     environment:
       - ACCEPT_EULA=Y
     volumes:
       - seq_data:/data
-    networks:
-      - network
 
   redis:
     image: redis:latest
-    ports:
-      - "6379:6379"
     volumes:
       - redis-data:/data
-    networks:
-      - network
   
   postgres:
     image: postgres:latest
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=Users
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    networks:
-      - network
   
 volumes:
   redis-data:
   postgres-data:
   seq_data:
-
-networks:
-  network:
-    driver: bridge

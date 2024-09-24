@@ -47,20 +47,31 @@ public sealed class CacheEmailVerificationService : IEmailVerificationService
         string codeKey = CodePrefix + email;
         string statusKey = StatusPrefix + email;
         var storedCode = await _cache.GetStringAsync(codeKey);
-        
+
+        if (string.IsNullOrEmpty(storedCode)) 
+        {
+            _logger.LogDebug("Code is not found in cache by \"{CodeKey}\" key", codeKey);
+        }
+        else
+        {
+            _logger.LogDebug("Code is found in cache by \"{CodeKey}\" key", codeKey);
+        }
+
         bool verified = int.TryParse(storedCode, out int verificationCode) && verificationCode == code;
         if (!verified)
         {
+            _logger.LogDebug("Code is not equal to code in cache by \"{CodeKey}\" key", codeKey);
             return false;
         }
         
         await _cache.RemoveAsync(codeKey);
+        _logger.LogDebug("Code removed from cache by \"{CodeKey}\" key", codeKey);
         var cacheOptions = new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_options.VerifiedPersistenceSeconds)
         };
         await _cache.SetStringAsync(statusKey, EmailVerificationStatus.Verified.ToString(), cacheOptions);
-        
+        _logger.LogDebug("Status set to \"Verified\" by \"{StatusKey}\" key", statusKey);
         return true;
     }
 
