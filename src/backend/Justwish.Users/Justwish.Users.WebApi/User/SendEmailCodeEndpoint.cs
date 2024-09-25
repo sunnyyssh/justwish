@@ -34,11 +34,15 @@ public sealed class SendEmailCodeEndpoint : Endpoint<SendEmailCodeEndpoint.Email
 
     public sealed class EmailRequestValidator : Validator<EmailRequest>
     {
-        public EmailRequestValidator(IUserBusinessRulePredicates rulePredicates)
+        public EmailRequestValidator()
         {
             RuleFor(x => x.Email)
                 .EmailAddress()
-                .MustAsync(async (email, _) => await rulePredicates.IsUserEmailFree(email))
+                .MustAsync(async (email, _) =>
+                {
+                    var rulePredicates = Resolve<IUserBusinessRulePredicates>();
+                    return await rulePredicates.IsUserEmailFree(email);
+                })
                 .WithMessage("Email is already in use");
         }
     }

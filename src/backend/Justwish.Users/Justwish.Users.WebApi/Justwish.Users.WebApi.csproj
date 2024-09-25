@@ -16,10 +16,13 @@
     <ItemGroup>
       <PackageReference Include="FastEndpoints" Version="5.29.0.3-beta" />
       <PackageReference Include="MassTransit" Version="8.2.6-develop.1998" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0-rc.1.24451.1">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
+      <PackageReference Include="Serilog.Sinks.Seq" Version="8.0.0" />
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Justwish.Users.Application;
 using Justwish.Users.Domain;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 
@@ -22,7 +23,8 @@ public sealed class JwtServiceTests
             new JwtEncoder(options),
             mockStorage.Object, 
             new MockUserRepository([TestUser]), 
-            options);
+            options,
+            new Mock<ILogger<JwtService>>().Object);
         
         // Act
         var (_, refreshToken) = await service.IssueAsync(TestUser);
@@ -42,8 +44,9 @@ public sealed class JwtServiceTests
             // Here IJwtEncoder is not mocked because mocking requires just repeating JwtEncoder's logic which is tested btw 
             new JwtEncoder(options),
             mockStorage.Object, 
-            new MockUserRepository([TestUser]), 
-            options);
+            new MockUserRepository([TestUser]),
+            options,
+            new Mock<ILogger<JwtService>>().Object);
         
         // Act
         var issued = await service.IssueAsync(TestUser);
@@ -67,7 +70,8 @@ public sealed class JwtServiceTests
             new JwtEncoder(options),
             mockStorage.Object, 
             new MockUserRepository([TestUser]), 
-            options);
+            options,
+            new Mock<ILogger<JwtService>>().Object);
         
         // Act
         var (access, _) = await service.IssueAsync(TestUser);
@@ -82,19 +86,20 @@ public sealed class JwtServiceTests
     {
         // Arrange
         var mockStorage = MockStorage();
-        var options = CreateMockOptions(refreshExpirationTime: TimeSpan.FromMilliseconds(1200));
+        var options = CreateMockOptions(refreshExpirationTime: TimeSpan.FromMilliseconds(300));
         
         var service = new JwtService(
             // Here IJwtEncoder is not mocked because mocking requires just repeating JwtEncoder's logic which is tested btw 
             new JwtEncoder(options), 
             mockStorage.Object, 
             new MockUserRepository([TestUser]), 
-            options);
+            options,
+            new Mock<ILogger<JwtService>>().Object);
         
         // Act
         var (_, refresh) = await service.IssueAsync(TestUser);
         
-        await Task.Delay(1300); // Token expiration.
+        await Task.Delay(1800); // Token expiration.
         
         var refreshed = await service.RefreshAsync(refresh);
         
@@ -114,7 +119,8 @@ public sealed class JwtServiceTests
             new JwtEncoder(options),
             mockStorage.Object, 
             new MockUserRepository([TestUser]), 
-            options);
+            options,
+            new Mock<ILogger<JwtService>>().Object);
 
         var jwtToken = new JwtToken("It_is_real_token_I_swear.(No).");
         await mockStorage.Object.StoreAsync(jwtToken, options.Value.RefreshTokenExpirationTime);

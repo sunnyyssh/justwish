@@ -20,6 +20,10 @@ public static class DependencyInjection
         {
             services.AddDbContext<ApplicationDbContext>(opts =>
             {
+                if (environment.IsDevelopment())
+                {
+                    opts.EnableSensitiveDataLogging();
+                }
                 opts.UseNpgsql(configuration.GetConnectionString("ApplicationConnection"));
             });
         }

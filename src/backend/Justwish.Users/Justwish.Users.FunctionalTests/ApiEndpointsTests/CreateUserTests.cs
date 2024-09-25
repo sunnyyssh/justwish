@@ -3,26 +3,12 @@ using FastEndpoints;
 using Justwish.Users.Contracts;
 using Justwish.Users.Domain;
 using Justwish.Users.WebApi;
-using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Justwish.Users.FunctionalTests;
 
-public sealed class CreateUserTests : IAsyncDisposable
+public sealed class CreateUserTests : EndpointTestBase
 {
-    private readonly HttpClient _client;
-    
-    private readonly TestWebApplicationFactory _factory;
-
-    private readonly ITestHarness _testHarness;
-
-    public CreateUserTests()
-    {
-        _factory = new TestWebApplicationFactory();
-        _client = _factory.CreateClient();
-        _testHarness = _factory.Services.GetRequiredService<ITestHarness>();
-    }
-
     [Theory]
     [InlineData("wrong@@wrongEmail", "valid_username", "valid_Password_6969")]
     [InlineData("validEmail@test.com", "o", "valid_Password_6969")]
@@ -32,7 +18,7 @@ public sealed class CreateUserTests : IAsyncDisposable
     public async Task Doesnt_Create_NotValid_User(string email, string username, string password)
     {
         // Act
-        var response = await _client.POSTAsync<CreateUserEndpoint,
+        var response = await Client.POSTAsync<CreateUserEndpoint,
             CreateUserEndpoint.RegistrationRequest>(
             new CreateUserEndpoint.RegistrationRequest(username, email, password));
 
@@ -48,13 +34,13 @@ public sealed class CreateUserTests : IAsyncDisposable
         const string username = "justwish";
         const string password = "passwordSuperPuper_123";
         
-        var verificationService = _factory.Services.GetRequiredService<IEmailVerificationService>();
+        var verificationService = Factory.Services.GetRequiredService<IEmailVerificationService>();
         
         var code = await verificationService.IssueCodeAsync(email);
         await verificationService.VerifyEmailAsync(email, code);
 
         // Act
-        var response = await _client.POSTAsync<CreateUserEndpoint,
+        var response = await Client.POSTAsync<CreateUserEndpoint,
             CreateUserEndpoint.RegistrationRequest, CreateUserEndpoint.RegisteredResponse>(
             new CreateUserEndpoint.RegistrationRequest(username, email, password));
 
@@ -72,18 +58,18 @@ public sealed class CreateUserTests : IAsyncDisposable
         const string username = "justwish";
         const string password = "passwordSuperPuper_123";
         
-        var verificationService = _factory.Services.GetRequiredService<IEmailVerificationService>();
+        var verificationService = Factory.Services.GetRequiredService<IEmailVerificationService>();
         
         var code = await verificationService.IssueCodeAsync(email);
         await verificationService.VerifyEmailAsync(email, code);
 
         // Act
-        var response = await _client.POSTAsync<CreateUserEndpoint,
+        var response = await Client.POSTAsync<CreateUserEndpoint,
             CreateUserEndpoint.RegistrationRequest, CreateUserEndpoint.RegisteredResponse>(
             new CreateUserEndpoint.RegistrationRequest(username, email, password));
 
         // Assert
-        Assert.True(await _testHarness.Published.Any<UserCreatedEvent>());
+        Assert.True(await MassTransitTestHarness.Published.Any<UserCreatedEvent>());
     }
 
     [Fact]
@@ -94,22 +80,16 @@ public sealed class CreateUserTests : IAsyncDisposable
         const string username = "justwish";
         const string password = "passwordSuperPuper_123";
         
-        var verificationService = _factory.Services.GetRequiredService<IEmailVerificationService>();
+        var verificationService = Factory.Services.GetRequiredService<IEmailVerificationService>();
         
         _ = await verificationService.IssueCodeAsync(email); // Issued but not verified.
 
         // Act
-        var response = await _client.POSTAsync<CreateUserEndpoint,
+        var response = await Client.POSTAsync<CreateUserEndpoint,
             CreateUserEndpoint.RegistrationRequest>(
             new CreateUserEndpoint.RegistrationRequest(username, email, password));
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await _factory.DisposeAsync();
-        _client.Dispose();
     }
 }

@@ -4,16 +4,8 @@ using Justwish.Users.WebApi;
 
 namespace Justwish.Users.FunctionalTests;
 
-public sealed class SignInTests
+public sealed class SignInTests : EndpointTestBase
 {
-    private readonly HttpClient _client;
-    
-    public SignInTests()
-    {
-        var factory = new TestWebApplicationFactory();
-        _client = factory.CreateClient();
-    }
-
     [Fact]
     public async Task SignIn_With_ValidEmail_Password()
     {
@@ -23,7 +15,7 @@ public sealed class SignInTests
         
         // Act
         var response =
-            await _client.POSTAsync<SignInEndpoint, SignInEndpoint.SignInRequest, SignInEndpoint.SignInResponse>(
+            await Client.POSTAsync<SignInEndpoint, SignInEndpoint.SignInRequest, SignInEndpoint.SignInResponse>(
                 new SignInEndpoint.SignInRequest(email, null, password));
 
         // Assert
@@ -39,7 +31,7 @@ public sealed class SignInTests
         
         // Act
         var response =
-            await _client.POSTAsync<SignInEndpoint, SignInEndpoint.SignInRequest, SignInEndpoint.SignInResponse>(
+            await Client.POSTAsync<SignInEndpoint, SignInEndpoint.SignInRequest, SignInEndpoint.SignInResponse>(
                 new SignInEndpoint.SignInRequest(null, username, password));
 
         // Assert
@@ -55,7 +47,7 @@ public sealed class SignInTests
         
         // Act
         var response =
-            await _client.POSTAsync<SignInEndpoint, SignInEndpoint.SignInRequest, SignInEndpoint.SignInResponse>(
+            await Client.POSTAsync<SignInEndpoint, SignInEndpoint.SignInRequest, SignInEndpoint.SignInResponse>(
                 new SignInEndpoint.SignInRequest(email, null, password));
 
         // Assert

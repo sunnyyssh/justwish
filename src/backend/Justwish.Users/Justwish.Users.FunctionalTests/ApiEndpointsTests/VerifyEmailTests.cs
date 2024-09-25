@@ -1,37 +1,24 @@
 ﻿using System.Net;
 using FastEndpoints;
-using Justwish.Users.Contracts;
 using Justwish.Users.Domain;
 using Justwish.Users.WebApi;
-using MassTransit.Testing;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Justwish.Users.FunctionalTests;
 
-public sealed class VerifyEmailTests : IAsyncDisposable
+public sealed class VerifyEmailTests : EndpointTestBase
 {
-    private readonly TestWebApplicationFactory _factory;
-    private readonly HttpClient _client;
-    
-    public VerifyEmailTests()
-    {
-        _factory = new TestWebApplicationFactory();
-        _client = _factory.CreateClient();
-    }
-
     [Fact]
     public async Task VerifiesEmail_WithIssuedCode()
     {
         // Arrange
         const string email = "test@test.com";
-        var codeIssuer = _factory.Services.GetRequiredService<IEmailVerificationIssuer>();
+        var codeIssuer = Factory.Services.GetRequiredService<IEmailVerificationIssuer>();
         int code = await codeIssuer.IssueCodeAsync(email);
         
         // Act
         var response =
-            await _client
-                .POSTAsync<VerifyEmailCodeEndpoint, VerifyEmailCodeEndpoint.EmailCodeRequest,
+            await Client.POSTAsync<VerifyEmailCodeEndpoint, VerifyEmailCodeEndpoint.EmailCodeRequest,
                     VerifyEmailCodeEndpoint.VerificationStatusResponse>(
                     new VerifyEmailCodeEndpoint.EmailCodeRequest(email, code));
         
@@ -49,8 +36,7 @@ public sealed class VerifyEmailTests : IAsyncDisposable
         
         // Act
         var response =
-            await _client
-                .POSTAsync<VerifyEmailCodeEndpoint, VerifyEmailCodeEndpoint.EmailCodeRequest,
+            await Client.POSTAsync<VerifyEmailCodeEndpoint, VerifyEmailCodeEndpoint.EmailCodeRequest,
                     VerifyEmailCodeEndpoint.VerificationStatusResponse>(
                     new VerifyEmailCodeEndpoint.EmailCodeRequest(email, code));
         
@@ -67,7 +53,7 @@ public sealed class VerifyEmailTests : IAsyncDisposable
         const int code = 6969; // Not issued.
         
         // Act
-        var response = await _client.POSTAsync<VerifyEmailCodeEndpoint, VerifyEmailCodeEndpoint.EmailCodeRequest,
+        var response = await Client.POSTAsync<VerifyEmailCodeEndpoint, VerifyEmailCodeEndpoint.EmailCodeRequest,
             VerifyEmailCodeEndpoint.VerificationStatusResponse>(
             new VerifyEmailCodeEndpoint.EmailCodeRequest(email, code));
         
@@ -82,17 +68,11 @@ public sealed class VerifyEmailTests : IAsyncDisposable
         string email = TestData.User1.Email;
         
         // Act
-        var response = await _client.POSTAsync<SendEmailCodeEndpoint, SendEmailCodeEndpoint.EmailRequest,
+        var response = await Client.POSTAsync<SendEmailCodeEndpoint, SendEmailCodeEndpoint.EmailRequest,
             VerifyEmailCodeEndpoint.VerificationStatusResponse>(
             new SendEmailCodeEndpoint.EmailRequest(email));
         
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.Response.StatusCode);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await _factory.DisposeAsync();
-        _client.Dispose();
     }
 }

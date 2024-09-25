@@ -1,6 +1,7 @@
 ﻿using Justwish.Users.Application;
 using Justwish.Users.Domain;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Justwish.Users.UnitTests;
@@ -14,8 +15,8 @@ public sealed class CacheRefreshTokenStorageTests
         var jwtToken = new JwtToken(@"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
         
         var cacheMock = MockHelpers.MockCacheWithDict(new Dictionary<string, byte[]>());
-        var storage = new CacheRefreshTokenStorage(cacheMock.Object);
-        
+        var storage = new CacheRefreshTokenStorage(cacheMock.Object, MockHelpers.MockLogger<CacheRefreshTokenStorage>());
+
         // Act
         bool valid = await storage.IsValidAsync(jwtToken);
 
@@ -30,8 +31,8 @@ public sealed class CacheRefreshTokenStorageTests
         var jwtToken = new JwtToken(@"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
         
         var cacheMock = MockHelpers.MockCacheWithDict(new Dictionary<string, byte[]>());
-        var storage = new CacheRefreshTokenStorage(cacheMock.Object);
-        
+        var storage = new CacheRefreshTokenStorage(cacheMock.Object, MockHelpers.MockLogger<CacheRefreshTokenStorage>());
+
         // Act
         await storage.StoreAsync(jwtToken, TimeSpan.FromHours(1));
         bool valid = await storage.IsValidAsync(jwtToken);
@@ -47,8 +48,8 @@ public sealed class CacheRefreshTokenStorageTests
         var jwtToken = new JwtToken(@"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
         
         var cacheMock = MockHelpers.MockCacheWithDict(new Dictionary<string, byte[]>());
-        var storage = new CacheRefreshTokenStorage(cacheMock.Object);
-        
+        var storage = new CacheRefreshTokenStorage(cacheMock.Object, MockHelpers.MockLogger<CacheRefreshTokenStorage>());
+
         // Act
         await storage.StoreAsync(jwtToken, TimeSpan.FromHours(1));
         await storage.RemoveAsync(jwtToken);

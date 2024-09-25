@@ -52,10 +52,11 @@ public sealed class CreateUserHandler : ICommandHandler<CreateUserCommand, Creat
             throw new InvalidOperationException("Can't create user");
         }
 
-        _logger.LogInformation("{Username} {Email} user is created", user.Username, user.Email);
+        _logger.LogInformation("New user is created: \"{Username}\" username and \"{Email}\" email", user.Username, user.Email);
         
         var userCreatedEvent = new UserCreatedEvent(user.Id, user.Username, user.Email);
         await _publisher.Publish(userCreatedEvent, cancellationToken);
+        _logger.LogInformation("UserCreatedEvent published: {Event}", userCreatedEvent);
         
         return CreateUserResponse.Success(UserDto.FromDomain(user));
     }

@@ -2,18 +2,33 @@ using System.Text.Json;
 using FastEndpoints;
 using Justwish.Users.Application;
 using Justwish.Users.Infrastructure;
+using Justwish.Users.WebApi;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, config) =>
+{
+    config.ReadFrom.Configuration(context.Configuration);
+});
 
 builder.Services
     .AddApplication(builder.Configuration)
     .AddInfrastructure(builder.Configuration, builder.Environment);
 
-builder.Services.AddAuthentication();
-builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme);
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(AuthConstants.ValidJwtTokenTypePolicy, policy =>
+    {
+        policy.RequireClaim(JwtTokenConstants.TokenTypeClaimName, JwtTokenConstants.AccessTokenType);
+    });
+
+builder.Services.ConfigureOptions<JwtBearerConfigureOptions>();
 
 builder.Services.AddMediatR(config =>
 {
@@ -22,10 +37,26 @@ builder.Services.AddMediatR(config =>
 
 builder.Services.AddMassTransit(config =>
 {
-    config.UsingInMemory();
+    // ATTENTION: You should make it not like that in the future.
+    if (builder.Environment.IsDevelopment())
+    {
+        config.UsingInMemory((ctx, inMemoryConfigure) =>
+        {
+            inMemoryConfigure.UseDelayedMessageScheduler();
+            inMemoryConfigure.ConfigureEndpoints(ctx);
+        });
+        config.AddConsumer<MockSendEmailVerificationConsumer>();
+        config.SetDefaultRequestTimeout(TimeSpan.FromSeconds(5));
+    }
 });
 
-builder.Services.AddFastEndpoints();
+builder.Services.AddFastEndpoints(options =>
+{
+    if (!builder.Environment.IsDevelopment())
+    {
+        options.Filter = endpointType => endpointType != typeof(HelloWorldEndpoint);
+    }
+});
 
 builder.Services.Configure<JsonOptions>(opts =>
 {
@@ -33,6 +64,9 @@ builder.Services.Configure<JsonOptions>(opts =>
 });
 
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapFastEndpoints();
 

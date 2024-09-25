@@ -1,5 +1,6 @@
 ﻿using Justwish.Users.Domain;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 
 namespace Justwish.Users.Application;
 
@@ -12,10 +13,12 @@ public sealed class CacheRefreshTokenStorage : IJwtRefreshTokenStorage
     private const string InvalidStatus = "invalid";  
     
     private readonly IDistributedCache _cache;
+    private readonly ILogger<CacheRefreshTokenStorage> _logger;
 
-    public CacheRefreshTokenStorage(IDistributedCache cache)
+    public CacheRefreshTokenStorage(IDistributedCache cache, ILogger<CacheRefreshTokenStorage> logger)
     {
         _cache = cache;
+        _logger = logger;
     }
     
     public async Task<bool> IsValidAsync(JwtToken refreshToken)
@@ -29,7 +32,6 @@ public sealed class CacheRefreshTokenStorage : IJwtRefreshTokenStorage
     public async Task RemoveAsync(JwtToken refreshToken)
     {
         string key = RefreshTokenPrefix + refreshToken.Token;
-        
         await _cache.RemoveAsync(key);
     }
 
