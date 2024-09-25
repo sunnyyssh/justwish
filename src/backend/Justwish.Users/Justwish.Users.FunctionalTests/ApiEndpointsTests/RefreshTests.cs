@@ -3,7 +3,6 @@ using FastEndpoints;
 using Justwish.Users.Domain;
 using Justwish.Users.Domain.Interfaces;
 using Justwish.Users.WebApi;
-using Justwish.Users.WebApi.ApiKeyAuth;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Justwish.Users.FunctionalTests;
@@ -90,21 +89,5 @@ public sealed class RefreshTests : EndpointTestBase
         Assert.Equal(HttpStatusCode.OK, response.Response.StatusCode);
         Assert.NotEqual(issued.RefreshToken.Token, response.Result.RefreshToken);
         Assert.NotEqual(issued.AccessToken.Token, response.Result.AccessToken);
-    }
-    
-    [Fact]
-    public async Task Unauthorized_With_No_ApiKey()
-    {
-        // Arrange
-        const string fakeToken = "looksLikeItIsNotEvenAToken.OkayIWillAddSomeDots.AndDotsMore";  // Token shouldn't even be validated.
-        Client.DefaultRequestHeaders.Remove(ApiKeyConstants.HeaderName);
-        
-        // Act
-        var response =
-            await Client.POSTAsync<RefreshEndpoint, RefreshEndpoint.RefreshRequest, RefreshEndpoint.RefreshResponse>(
-                new RefreshEndpoint.RefreshRequest(fakeToken));
-        
-        // Assert
-        Assert.Equal(HttpStatusCode.Unauthorized, response.Response.StatusCode);
     }
 }

@@ -1,9 +1,7 @@
 ﻿using FastEndpoints;
 using FluentValidation;
-using FluentValidation.Validators;
 using Justwish.Users.Application;
 using Justwish.Users.Domain.Interfaces;
-using Justwish.Users.WebApi.ApiKeyAuth;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -27,7 +25,7 @@ public sealed class CreateUserEndpoint
     {
         Post("registration/create");
         Validator<RegistrationRequestValidator>();
-        Policies(ApiKeyConstants.PolicyName);
+        AllowAnonymous();
     }
 
     public override async Task<Results<Ok<RegisteredResponse>, BadRequest<string>>> 

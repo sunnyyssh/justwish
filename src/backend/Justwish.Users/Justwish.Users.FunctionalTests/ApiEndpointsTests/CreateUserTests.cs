@@ -3,8 +3,6 @@ using FastEndpoints;
 using Justwish.Users.Contracts;
 using Justwish.Users.Domain;
 using Justwish.Users.WebApi;
-using Justwish.Users.WebApi.ApiKeyAuth;
-using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Justwish.Users.FunctionalTests;
@@ -93,24 +91,5 @@ public sealed class CreateUserTests : EndpointTestBase
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task Unauthorized_With_No_ApiKey()
-    {
-        // Arrange
-        const string email = "justwish@gmail.com"; // These shouldn't even be validated.
-        const string username = "justwish";
-        const string password = "passwordSuperPuper_123";
-        
-        Client.DefaultRequestHeaders.Remove(ApiKeyConstants.HeaderName);
-        
-        // Act
-        var response = await Client.POSTAsync<CreateUserEndpoint,
-            CreateUserEndpoint.RegistrationRequest>(
-            new CreateUserEndpoint.RegistrationRequest(username, email, password));
-        
-        // Assert
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 }

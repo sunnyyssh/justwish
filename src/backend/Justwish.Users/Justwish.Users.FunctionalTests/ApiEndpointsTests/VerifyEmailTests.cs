@@ -1,11 +1,7 @@
 ﻿using System.Net;
 using FastEndpoints;
-using Justwish.Users.Contracts;
 using Justwish.Users.Domain;
 using Justwish.Users.WebApi;
-using Justwish.Users.WebApi.ApiKeyAuth;
-using MassTransit.Testing;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Justwish.Users.FunctionalTests;
@@ -78,21 +74,5 @@ public sealed class VerifyEmailTests : EndpointTestBase
         
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.Response.StatusCode);
-    }
-
-    [Fact]
-    public async Task Unauthorized_With_No_ApiKey()
-    {
-        // Arrange
-        const string email = "test@test.com";
-        Client.DefaultRequestHeaders.Remove(ApiKeyConstants.HeaderName);
-        
-        // Act
-        var response = await Client.POSTAsync<SendEmailCodeEndpoint, SendEmailCodeEndpoint.EmailRequest,
-            VerifyEmailCodeEndpoint.VerificationStatusResponse>(
-            new SendEmailCodeEndpoint.EmailRequest(email));
-        
-        // Assert
-        Assert.Equal(HttpStatusCode.Unauthorized, response.Response.StatusCode);
     }
 }

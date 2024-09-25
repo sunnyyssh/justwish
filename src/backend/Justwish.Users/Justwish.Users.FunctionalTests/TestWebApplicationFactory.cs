@@ -1,17 +1,13 @@
 ﻿using Justwish.Users.Infrastructure;
-using Justwish.Users.WebApi.ApiKeyAuth;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Justwish.Users.FunctionalTests;
 
@@ -54,15 +50,7 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
         });
         
         builder.ConfigureServices(services =>
-        {
-            services.ConfigureHttpClientDefaults(clientBuilder =>
-            {
-                clientBuilder.ConfigureHttpClient(configure =>
-                {
-                    configure.DefaultRequestHeaders.Add(ApiKeyConstants.HeaderName, TestConstants.ApiKey);
-                });
-            });
-            
+        {            
             var dbContextDescriptor =
                 services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
             if (dbContextDescriptor is not null)

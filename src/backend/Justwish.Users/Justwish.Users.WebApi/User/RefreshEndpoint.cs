@@ -1,7 +1,6 @@
 ﻿using FastEndpoints;
 using Justwish.Users.Application;
 using Justwish.Users.Domain;
-using Justwish.Users.WebApi.ApiKeyAuth;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -19,7 +18,7 @@ public sealed class RefreshEndpoint : Endpoint<RefreshEndpoint.RefreshRequest, R
     public override void Configure()
     {
         Post("auth/refresh");
-        Policies(ApiKeyConstants.PolicyName);
+        AllowAnonymous();
     }
 
     public override async Task<Results<Ok<RefreshResponse>, BadRequest<string>>> ExecuteAsync(RefreshRequest req, CancellationToken ct)

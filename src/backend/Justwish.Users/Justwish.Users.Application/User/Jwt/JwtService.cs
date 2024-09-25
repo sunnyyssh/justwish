@@ -10,11 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Justwish.Users.Application;
 
 public sealed class JwtService : IJwtService
-{
-    private const string TokenTypeClaimName = "token_type";
-    private const string AccessTokenType = "access";
-    private const string RefreshTokenType = "refresh";
-    
+{    
     private readonly IJwtEncoder _encoder;
     private readonly IJwtRefreshTokenStorage _refreshTokenStorage;
     private readonly IUserReadRepository _userReadRepository;
@@ -90,7 +86,7 @@ public sealed class JwtService : IJwtService
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.Name, user.Username),
-            new Claim(TokenTypeClaimName, AccessTokenType),
+            new Claim(JwtTokenConstants.TokenTypeClaimName, JwtTokenConstants.AccessTokenType),
         ];
         
         return _encoder.CreateToken(claims, _options.AccessTokenExpirationTime);
@@ -101,7 +97,7 @@ public sealed class JwtService : IJwtService
         Claim[] claims =
         [
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(TokenTypeClaimName, RefreshTokenType),
+            new Claim(JwtTokenConstants.TokenTypeClaimName, JwtTokenConstants.RefreshTokenType),
         ];
         
         return _encoder.CreateToken(claims, _options.RefreshTokenExpirationTime);

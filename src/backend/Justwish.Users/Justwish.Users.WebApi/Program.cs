@@ -3,8 +3,8 @@ using FastEndpoints;
 using Justwish.Users.Application;
 using Justwish.Users.Infrastructure;
 using Justwish.Users.WebApi;
-using Justwish.Users.WebApi.ApiKeyAuth;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -20,17 +20,15 @@ builder.Services
     .AddApplication(builder.Configuration)
     .AddInfrastructure(builder.Configuration, builder.Environment);
 
-builder.Services.AddSingleton<IApiKeyValidator, ConfigurationApiKeyValidator>();
-
-// builder.Services.AddAuthentication("Default");
-builder.Services.AddAuthentication(ApiKeyConstants.AuthenticationScheme)
-    .AddScheme<ApiKeySchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyConstants.AuthenticationScheme, null);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme);
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy(ApiKeyConstants.PolicyName, policy =>
+    .AddPolicy(AuthConstants.ValidJwtTokenTypePolicy, policy =>
     {
-        policy.RequireClaim(ApiKeyConstants.ClaimType);
-        policy.AddAuthenticationSchemes(ApiKeyConstants.AuthenticationScheme);
+        policy.RequireClaim(JwtTokenConstants.TokenTypeClaimName, JwtTokenConstants.AccessTokenType);
     });
+
+builder.Services.ConfigureOptions<JwtBearerConfigureOptions>();
 
 builder.Services.AddMediatR(config =>
 {

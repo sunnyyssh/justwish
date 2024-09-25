@@ -1,5 +1,7 @@
-﻿using Justwish.Users.WebApi.ApiKeyAuth;
+﻿using System.Net.Http.Headers;
+using Justwish.Users.Domain;
 using MassTransit.Testing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Justwish.Users.FunctionalTests;
 
@@ -16,7 +18,26 @@ public abstract class EndpointTestBase : IAsyncDisposable
         Factory = new TestWebApplicationFactory();
 
         Client = Factory.CreateClient();
-        Client.DefaultRequestHeaders.Add(ApiKeyConstants.HeaderName, TestConstants.ApiKey);
+
+    }
+
+    protected async Task SetAuthorizationDefaultHeaderAsync(User user) 
+    {
+        var tokenPair = await IssueTestTokens(user);
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenPair.AccessToken.Token);
+    }
+
+    protected Task ClearAuthorizationDefaultHeaderAsync()
+    {
+        Client.DefaultRequestHeaders.Authorization = null;
+        return Task.CompletedTask;
+    }
+
+    private async Task<JwtTokenPair> IssueTestTokens(User user) 
+    {
+        var jwtService = Factory.Services.GetRequiredService<IJwtService>();
+        var tokenPair = await jwtService.IssueAsync(user);
+        return tokenPair;
     }
 
     public async ValueTask DisposeAsync()

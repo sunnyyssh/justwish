@@ -1,18 +1,25 @@
 using FastEndpoints;
-using Justwish.Users.WebApi.ApiKeyAuth;
 
 namespace Justwish.Users.WebApi;
 
 public class HelloWorldEndpoint : EndpointWithoutRequest<string>
 {
+    private readonly ILogger _logger;
+
+    public HelloWorldEndpoint(ILogger<HelloWorldEndpoint> logger)
+    {
+        _logger = logger;
+    }
+
     public override void Configure()
     {
         Get("/hello-world");
-        Policies(ApiKeyConstants.PolicyName);
+        AllowAnonymous();
     }
 
     public override Task<string> ExecuteAsync(CancellationToken ct)
     {
+        _logger.LogInformation("Hello-world requested");
         return Task.FromResult("Hello World!");
     }
 }
