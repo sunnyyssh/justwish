@@ -40,9 +40,8 @@ public abstract class EndpointTestBase : IAsyncDisposable
         return tokenPair;
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        await Factory.DisposeAsync();
-        Client.Dispose();
+        return Factory.DisposeAsync();
     }
 }
