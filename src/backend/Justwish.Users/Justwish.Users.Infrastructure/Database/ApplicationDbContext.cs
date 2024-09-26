@@ -20,5 +20,7 @@ public sealed class ApplicationDbContext : DbContext
         
         userEntityBuilder.HasIndex(x => x.Email).IsUnique();
         userEntityBuilder.HasIndex(x => x.Username).IsUnique();
+
+        userEntityBuilder.Property(x => x.SocialLinks).HasColumnType("jsonb");
     }
 }
