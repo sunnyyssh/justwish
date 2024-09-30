@@ -39,8 +39,10 @@ public sealed class EfUserRepository : IUserRepository
         {
             return Result.Error();
         }
+
         _dbContext.Add(user);
         int written = await _dbContext.SaveChangesAsync();
+
         return written > 0 ? Result.Success() : Result.Error();
     }
 
@@ -51,6 +53,7 @@ public sealed class EfUserRepository : IUserRepository
         {
             return Result.NotFound();
         }
+
         _dbContext.Update(user);
         await _dbContext.SaveChangesAsync();
         return Result.Success();
@@ -63,8 +66,20 @@ public sealed class EfUserRepository : IUserRepository
         {
             return Result.NotFound();
         }
+
+        // User removal should cause its photo removal only if it is not shared.
+        // Mention that if users have same photo that is not Shared, it will cause bugs.
+        // Also cascade deletion seems to work faster, but account deletion is not a frequent operation.
+        if (loadedUser.ProfilePhotoId is not null 
+            && await _dbContext.ProfilePhotos.FindAsync(loadedUser.ProfilePhotoId) 
+                is { IsShared: false } notSharedPhoto)
+        {
+            _dbContext.Remove(notSharedPhoto);
+        }
+
         _dbContext.Remove(loadedUser);
         await _dbContext.SaveChangesAsync();
+        
         return Result.Success();
     }
 }

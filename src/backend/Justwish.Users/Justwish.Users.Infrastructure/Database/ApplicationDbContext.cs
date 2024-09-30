@@ -10,17 +10,28 @@ public sealed class ApplicationDbContext : DbContext
 
     public DbSet<User> Users => Set<User>();
 
+    public DbSet<ProfilePhoto> ProfilePhotos => Set<ProfilePhoto>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        var userEntityBuilder = modelBuilder.Entity<User>();
+        var userEntity = modelBuilder.Entity<User>();
         
-        userEntityBuilder.Property(x => x.PasswordHash).IsRequired();
-        userEntityBuilder.Property(x => x.Email).IsRequired();
-        userEntityBuilder.Property(x => x.Username).IsRequired();
+        userEntity.Property(x => x.PasswordHash).IsRequired();
+        userEntity.Property(x => x.Email).IsRequired();
+        userEntity.Property(x => x.Username).IsRequired();
         
-        userEntityBuilder.HasIndex(x => x.Email).IsUnique();
-        userEntityBuilder.HasIndex(x => x.Username).IsUnique();
+        userEntity.HasIndex(x => x.Email).IsUnique();
+        userEntity.HasIndex(x => x.Username).IsUnique();
 
-        userEntityBuilder.Property(x => x.SocialLinks).HasColumnType("jsonb");
+        userEntity.Property(x => x.Gender).HasConversion<string>();
+
+        userEntity.Property(x => x.SocialLinks).HasColumnType("jsonb");
+
+        var photoEntity = modelBuilder.Entity<ProfilePhoto>();
+
+        photoEntity.Property(x => x.Data).IsRequired();
+        photoEntity.Property(x => x.ContentType).IsRequired();
+
+        photoEntity.Ignore(x => x.IsShared);
     }
 }

@@ -12,7 +12,7 @@ public sealed record UserDto(Guid Id, string Email, string Username)
 
     public DateOnly? DateOfBirth { get; init; }
 
-    public string? Gender { get; init; }
+    public Gender? Gender { get; init; }
 
     public IReadOnlyList<string>? SocialLinks { get; init; }
 

@@ -23,7 +23,7 @@ public record GetUserResponse(Guid Id, string Email, string Username)
             LastName = userDto.LastName,
             ProfilePhotoId = userDto.ProfilePhotoId,
             DateOfBirth = userDto.DateOfBirth,
-            Gender = userDto.Gender,
+            Gender = userDto.Gender.ToString(),
             SocialLinks = userDto.SocialLinks,
         };
 };

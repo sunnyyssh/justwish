@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Justwish.Users.Domain;
@@ -32,7 +33,7 @@ public sealed class User
 
     public DateOnly? DateOfBirth { get; set; }
 
-    public string? Gender { get; set; }
+    public Gender? Gender { get; set; }
 
     public List<string>? SocialLinks { get; set; }
 }

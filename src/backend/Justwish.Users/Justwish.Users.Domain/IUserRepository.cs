@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using Ardalis.Result;
+﻿using Ardalis.Result;
 
 namespace Justwish.Users.Domain.Interfaces;
 
