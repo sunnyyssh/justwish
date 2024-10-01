@@ -26,6 +26,10 @@ public class JwtBearerConfigureOptions : IConfigureNamedOptions<JwtBearerOptions
 
     public void Configure(JwtBearerOptions options)
     {
+        // This turns off mapping of claim types. 
+        // Without this line "sub" jwt claim is mapped to "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier".
+        // It seems implicit at now.
+        options.MapInboundClaims = false; 
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,

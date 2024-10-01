@@ -1,13 +1,16 @@
 ﻿using System.Security.Claims;
 using Justwish.Users.Application;
 using Justwish.Users.Domain;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace Justwish.Users.UnitTests;
 
 public sealed class JwtEncoderTests
 {
-    [Fact]
-    public void Decodes_Encoded()
+    [Theory]
+    [InlineData("test", "it-is-test-claim-data")]
+    [InlineData(JwtRegisteredClaimNames.Sub, "1253a83a-a5b4-4afc-88ac-af65084ac5fc")]
+    public void Decodes_Encoded(string claimType, string claimValue)
     {
         // Arrange
         var optionsMock = MockHelpers.MockOptions(new JwtOptions
@@ -20,14 +23,14 @@ public sealed class JwtEncoderTests
         });
         var encoder = new JwtEncoder(optionsMock.Object);
 
-        Claim[] testClaims = [new Claim("test", "it-is-correct")];
+        Claim[] testClaims = [new Claim(claimType, claimValue)];
         
         // Act
         var jwtToken = encoder.CreateToken(testClaims, optionsMock.Object.Value.AccessTokenExpirationTime);
         var decodedClaims = encoder.DecodeToken(jwtToken);
 
         // Assert
-        Assert.Contains(decodedClaims, c => c is { Type: "test", Value: "it-is-correct" });
+        Assert.Contains(decodedClaims, c => c.Type == claimType && c.Value == claimValue);
     }
     
     [Fact]
