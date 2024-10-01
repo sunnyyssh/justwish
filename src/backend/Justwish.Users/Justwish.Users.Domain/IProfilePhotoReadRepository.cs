@@ -8,5 +8,7 @@ public interface IProfilePhotoReadRepository
 
     public Task<Result<ProfilePhoto>> GetProfilePhotoByIdAsync(Guid id);
 
+    public Task<Result<Guid>> GetRandomSharedPhotoIdAsync();
+
     public Task<Result<ProfilePhoto>> GetSharedByAliasAsync(string alias);
 }

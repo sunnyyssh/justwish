@@ -44,6 +44,19 @@ public class EfProfilePhotoRepository : IProfilePhotoRepository
         return photo is null ? Result<ProfilePhoto>.NotFound() : Result.Success(photo);
     }
 
+    public async Task<Result<Guid>> GetRandomSharedPhotoIdAsync()
+    {
+        var photo = await _context.ProfilePhotos
+            .Where(p => p.SharedPhotoAlias != null)
+            .OrderBy(p => EF.Functions.Random())
+            .Select(p => new { p.Id })
+            .FirstOrDefaultAsync();
+
+        return photo is not null
+            ? Result.Success(photo.Id) 
+            : Result<Guid>.NotFound();
+    }
+
     public async Task<Result<ProfilePhoto>> GetSharedByAliasAsync(string alias)
     {
         var photo = await _context.ProfilePhotos

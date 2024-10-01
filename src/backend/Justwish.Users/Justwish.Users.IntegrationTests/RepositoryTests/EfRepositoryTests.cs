@@ -3,7 +3,7 @@ using Justwish.Users.Infrastructure;
 
 namespace Justwish.Users.IntegrationTests;
 
-public class EfRepositoryTests : DatabaseTestBase
+public class EfUserRepositoryTests : DatabaseTestBase
 {
     [Fact]
     public async Task UserRemoval_Doesnt_Remove_Shared_Photo() 
