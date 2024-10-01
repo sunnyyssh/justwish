@@ -59,13 +59,14 @@ public sealed class UpdateUserProfileTests : EndpointTestBase
     public async Task Bad_Request_Invalid_Data_Authorized(
         string? firstName, string? lastName, DateOnly? dateOfBirth, Gender? gender, List<string>? socialLinks)
     {
+        // Arrange
         var request = new UpdateUserProfileEndpoint.UpdateRequest(firstName, lastName, dateOfBirth, gender, socialLinks);
         await SetAuthorizationDefaultHeaderAsync(TestData.User1);
-        
+
         // Act
         var response = await Client.PUTAsync<UpdateUserProfileEndpoint,
             UpdateUserProfileEndpoint.UpdateRequest, Results<Ok, BadRequest<string>>>(request);
-        
+
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.Response.StatusCode);
     }
@@ -79,6 +80,6 @@ public sealed class UpdateUserProfileTests : EndpointTestBase
             [null, null, DateOnly.MaxValue, null, null],
             [null, null, null, (Gender)45, null],
             [null, null, null, null, Enumerable.Range(1, 1000).Select(i => "https://media.example.com").ToList()],
-            [null, null, null, null, new List<string> { "smtp://not-http-link.com" }], 
+            [null, null, null, null, new List<string> { "smtp://not-http-link.com" }],
         ];
 }

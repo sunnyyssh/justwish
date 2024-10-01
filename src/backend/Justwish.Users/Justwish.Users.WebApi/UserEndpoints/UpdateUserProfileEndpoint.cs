@@ -55,12 +55,12 @@ public sealed class UpdateUserProfileEndpoint : Endpoint<UpdateUserProfileEndpoi
             When(x => x.FirstName is not null, () =>
                 RuleFor(x => x.FirstName!)
                     .MaximumLength(50)
-                    .Matches("^[A-Za-z][A-Za-z' -]+[A-Za-z]$"));
+                    .Matches("^[A-Za-z]+[' -]?[A-Za-z]+$"));
 
             When(x => x.LastName is not null, () =>
                 RuleFor(x => x.LastName!)
                     .MaximumLength(50)
-                    .Matches("^[A-Za-z][A-Za-z' -]+[A-Za-z]$"));
+                    .Matches("^[A-Za-z]+[' -]?[A-Za-z]+$"));
 
             When(x => x.DateOfBirth is not null, () =>
                 RuleFor(x => x.DateOfBirth!)
