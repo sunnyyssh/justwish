@@ -1,7 +1,5 @@
-﻿using Ardalis.Result;
-using Justwish.Users.Contracts;
+﻿using Justwish.Users.Contracts;
 using Justwish.Users.Domain;
-using Justwish.Users.Domain.Interfaces;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 

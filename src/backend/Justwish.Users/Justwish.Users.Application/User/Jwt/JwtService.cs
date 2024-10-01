@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using Ardalis.Result;
 using Justwish.Users.Domain;
-using Justwish.Users.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;

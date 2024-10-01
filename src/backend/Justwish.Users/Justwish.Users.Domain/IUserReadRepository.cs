@@ -1,6 +1,6 @@
 using Ardalis.Result;
 
-namespace Justwish.Users.Domain.Interfaces;
+namespace Justwish.Users.Domain;
 
 public interface IUserReadRepository
 {

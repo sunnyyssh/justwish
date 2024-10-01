@@ -1,6 +1,5 @@
 ﻿using Ardalis.Result;
 using Justwish.Users.Domain;
-using Justwish.Users.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace Justwish.Users.Application;

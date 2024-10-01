@@ -6,7 +6,7 @@ namespace Justwish.Users.IntegrationTests;
 public class EfRepositoryTests : DatabaseTestBase
 {
     [Fact]
-    public async Task UserRemoval_Removes_Photo_Not_Shared() 
+    public async Task UserRemoval_Doesnt_Remove_Shared_Photo() 
     {
         // Arrange
         var user = TestData.User1WithSharedPhoto1;
@@ -22,7 +22,7 @@ public class EfRepositoryTests : DatabaseTestBase
     }
 
     [Fact]
-    public async Task UserRemoval_Doesnt_Remove_Shared_Photo()
+    public async Task UserRemoval_Removes_Photo_Not_Shared()
     {
         // Arrange
         var user = TestData.User2WithOwnPhoto2;

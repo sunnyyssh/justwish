@@ -18,7 +18,6 @@ public abstract class EndpointTestBase : IAsyncDisposable
         Factory = new TestWebApplicationFactory();
 
         Client = Factory.CreateClient();
-
     }
 
     protected async Task SetAuthorizationDefaultHeaderAsync(User user) 

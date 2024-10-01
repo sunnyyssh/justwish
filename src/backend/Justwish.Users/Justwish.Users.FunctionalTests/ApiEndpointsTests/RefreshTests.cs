@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using FastEndpoints;
 using Justwish.Users.Domain;
-using Justwish.Users.Domain.Interfaces;
 using Justwish.Users.WebApi;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -2,7 +2,7 @@
 using FastEndpoints;
 using FluentValidation;
 using Justwish.Users.Application;
-using Justwish.Users.Domain.Interfaces;
+using Justwish.Users.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 // ReSharper disable ConvertTypeCheckPatternToNullCheck

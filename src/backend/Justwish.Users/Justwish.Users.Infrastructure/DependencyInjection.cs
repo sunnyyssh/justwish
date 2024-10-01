@@ -1,5 +1,4 @@
 ﻿using Justwish.Users.Domain;
-using Justwish.Users.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

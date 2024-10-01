@@ -1,8 +1,4 @@
-﻿using Castle.Core.Logging;
-using Justwish.Users.Application;
-using Justwish.Users.Domain;
-using Justwish.Users.Domain.Interfaces;
-using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
