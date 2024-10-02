@@ -13,7 +13,7 @@ public class EfProfilePhotoRepository : IProfilePhotoRepository
         _context = context;
     }
 
-    public async Task<Result> AddSharedAsync(ProfilePhoto profilePhoto)
+    public async Task<Result<Guid>> AddSharedAsync(ProfilePhoto profilePhoto)
     {
         if (!profilePhoto.IsShared)
         {
@@ -21,21 +21,21 @@ public class EfProfilePhotoRepository : IProfilePhotoRepository
         }
         var entry = _context.ProfilePhotos.Add(profilePhoto);
         await _context.SaveChangesAsync();
-        return entry.State == EntityState.Added ? Result.Success() : Result.Error();
+        return Result.Success(entry.Entity.Id);
     }
 
-    public async Task<Result> AddUserProfilePhotoAsync(ProfilePhoto profilePhoto)
+    public async Task<Result<Guid>> AddUserProfilePhotoAsync(ProfilePhoto profilePhoto)
     {
         var entry = _context.ProfilePhotos.Add(profilePhoto);
         await _context.SaveChangesAsync();
-        return entry.State == EntityState.Added ? Result.Success() : Result.Error();
+        return Result.Success(entry.Entity.Id);
     }
 
     public async Task<Result> DeleteAsync(ProfilePhoto profilePhoto)
     {
         var entry = _context.ProfilePhotos.Remove(profilePhoto);
         await _context.SaveChangesAsync();
-        return entry.State == EntityState.Deleted ? Result.Success() : Result.Error();
+        return Result.Success();
     }
 
     public async Task<Result<ProfilePhoto>> GetProfilePhotoByIdAsync(Guid id)
