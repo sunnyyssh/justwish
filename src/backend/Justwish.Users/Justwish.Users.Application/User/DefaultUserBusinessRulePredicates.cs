@@ -1,4 +1,4 @@
-﻿using Justwish.Users.Domain.Interfaces;
+﻿using Justwish.Users.Domain;
 
 namespace Justwish.Users.Application;
 

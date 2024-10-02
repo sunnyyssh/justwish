@@ -1,13 +1,12 @@
-﻿using System.Linq.Expressions;
-using Ardalis.Result;
+﻿using Ardalis.Result;
 
-namespace Justwish.Users.Domain.Interfaces;
+namespace Justwish.Users.Domain;
 
 public interface IUserRepository : IUserReadRepository
 {
-    Task<Result> AddAsync(User user);
+    Task<Result> AddAsync(User user, CancellationToken cancellationToken = default);
     
-    Task<Result> UpdateAsync(User user);
+    Task<Result> UpdateAsync(User user, CancellationToken cancellationToken = default);
     
-    Task<Result> DeleteAsync(User user);
+    Task<Result> DeleteAsync(User user, CancellationToken cancellationToken = default);
 }

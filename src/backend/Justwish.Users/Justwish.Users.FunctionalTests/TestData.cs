@@ -16,6 +16,19 @@ public static class TestData
 
     public const string User3Password = "AlexSecret_123";
 
+    public static readonly ProfilePhoto SharedPhoto1 = new()
+    {
+        Data = [1, 2, 3, 69],
+        ContentType = "test/test",
+        SharedPhotoAlias = "test",
+    };
+
+    public static readonly ProfilePhoto Photo2 = new()
+    {
+        Data = [1, 2, 3, 69],
+        ContentType = "test/test"
+    };
+
     public static readonly User User1 = new()
     {
         Email = "bob@example.com", Username = "bob", PasswordHash = PasswordHasher.Hash(User1Password)
@@ -33,6 +46,10 @@ public static class TestData
     
     public static void PopulateTestData(ApplicationDbContext context)
     {
+        context.ProfilePhotos.AddRange(SharedPhoto1, Photo2);
+        User1.ProfilePhotoId = SharedPhoto1.Id;
+        User2.ProfilePhotoId = Photo2.Id;
+        User3.ProfilePhotoId = SharedPhoto1.Id;
         context.Users.AddRange(User1, User2, User3);
         context.SaveChanges();
     }

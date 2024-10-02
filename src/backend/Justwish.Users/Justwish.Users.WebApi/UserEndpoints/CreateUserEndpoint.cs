@@ -1,7 +1,7 @@
 ﻿using FastEndpoints;
 using FluentValidation;
 using Justwish.Users.Application;
-using Justwish.Users.Domain.Interfaces;
+using Justwish.Users.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -48,10 +48,7 @@ public sealed class CreateUserEndpoint
         public RegistrationRequestValidator()
         {
             RuleFor(x => x.Username)
-                .MinimumLength(3)
-                .MaximumLength(32)
-                .Matches(@"^[a-z0-9_]+$")
-                .WithMessage("Username must contain only lowercase alphanumeric characters and underscores")
+                .Username()
                 .MustAsync(async (username, _) =>
                 {
                     var rulePredicates = Resolve<IUserBusinessRulePredicates>();
@@ -69,10 +66,7 @@ public sealed class CreateUserEndpoint
                 .WithMessage("Email is not free");
 
             RuleFor(x => x.Password)
-                .MinimumLength(6)
-                .MaximumLength(32)
-                .Matches(@"^[a-zA-Z0-9_]+$")
-                .WithMessage("Password must contain only alphanumeric characters and underscores");
+                .Password();
         }
     }
 }

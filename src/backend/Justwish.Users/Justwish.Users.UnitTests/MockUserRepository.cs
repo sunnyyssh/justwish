@@ -1,6 +1,5 @@
 ﻿using Ardalis.Result;
 using Justwish.Users.Domain;
-using Justwish.Users.Domain.Interfaces;
 
 namespace Justwish.Users.UnitTests;
 
@@ -37,20 +36,20 @@ public sealed class MockUserRepository : IUserRepository
         return Task.FromResult(result);
     }
 
-    public Task<Result> AddAsync(User user)
+    public Task<Result> AddAsync(User user, CancellationToken cancellationToken = default)
     {
         _users.Add(user);
         return Task.FromResult(new Result());
     }
 
-    public Task<Result> UpdateAsync(User user)
+    public Task<Result> UpdateAsync(User user, CancellationToken cancellationToken = default)
     {
         _users.RemoveAll(u => u.Id == user.Id);
         _users.Add(user);
         return Task.FromResult(new Result());
     }
 
-    public Task<Result> DeleteAsync(User user)
+    public Task<Result> DeleteAsync(User user, CancellationToken cancellationToken = default)
     {
         _users.Remove(user);
         return Task.FromResult(new Result());

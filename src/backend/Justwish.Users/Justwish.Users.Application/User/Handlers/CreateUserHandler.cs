@@ -1,7 +1,5 @@
-﻿using Ardalis.Result;
-using Justwish.Users.Contracts;
+﻿using Justwish.Users.Contracts;
 using Justwish.Users.Domain;
-using Justwish.Users.Domain.Interfaces;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -14,11 +12,14 @@ public sealed class CreateUserHandler : ICommandHandler<CreateUserCommand, Creat
     private readonly IPasswordHasher _passwordHasher;
     private readonly IPublishEndpoint _publisher;
     private readonly ILogger<CreateUserHandler> _logger;
+    private readonly IProfilePhotoReadRepository _photoRepository;
 
-    public CreateUserHandler(IUserRepository repository, IEmailVerificationChecker verificationChecker,
-        IPasswordHasher passwordHasher, IPublishEndpoint publisher, ILogger<CreateUserHandler> logger)
+    public CreateUserHandler(IUserRepository repository, IProfilePhotoReadRepository photoRepository, 
+        IEmailVerificationChecker verificationChecker, IPasswordHasher passwordHasher, 
+        IPublishEndpoint publisher, ILogger<CreateUserHandler> logger)
     {
         _repository = repository;
+        _photoRepository = photoRepository;
         _verificationChecker = verificationChecker;
         _passwordHasher = passwordHasher;
         _publisher = publisher;
@@ -41,6 +42,7 @@ public sealed class CreateUserHandler : ICommandHandler<CreateUserCommand, Creat
             Username = request.Username.ToLower(),
             Email = request.Email,
             PasswordHash = passwordHash,
+            ProfilePhotoId = await _photoRepository.GetRandomSharedPhotoIdAsync(cancellationToken)
         };
 
         var addResult = await _repository.AddAsync(user);

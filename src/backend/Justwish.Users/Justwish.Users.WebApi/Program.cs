@@ -16,6 +16,11 @@ builder.Host.UseSerilog((context, config) =>
     config.ReadFrom.Configuration(context.Configuration);
 });
 
+builder.WebHost.ConfigureKestrel(opts => 
+{
+    opts.Limits.MaxRequestBodySize = 5 * 1024 * 1024;
+});
+
 builder.Services
     .AddApplication(builder.Configuration)
     .AddInfrastructure(builder.Configuration, builder.Environment);
@@ -58,17 +63,15 @@ builder.Services.AddFastEndpoints(options =>
     }
 });
 
-builder.Services.Configure<JsonOptions>(opts =>
-{
-    opts.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-});
-
 var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapFastEndpoints();
+app.MapFastEndpoints(config => 
+{
+    config.Serializer.Options.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+});
 
 if (app.Environment.IsDevelopment())
 {

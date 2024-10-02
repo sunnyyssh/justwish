@@ -2,7 +2,7 @@
 using FastEndpoints;
 using FluentValidation;
 using Justwish.Users.Application;
-using Justwish.Users.Domain.Interfaces;
+using Justwish.Users.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 // ReSharper disable ConvertTypeCheckPatternToNullCheck
@@ -67,10 +67,7 @@ public sealed class SignInEndpoint : Endpoint<SignInEndpoint.SignInRequest, Resu
             When(x => string.IsNullOrWhiteSpace(x.Email), () =>
             {
                 RuleFor(x => x.Username)
-                    .MinimumLength(3)
-                    .MaximumLength(32)
-                    .Matches(@"^[a-z0-9_]+$")
-                    .WithMessage("Username must contain only lowercase alphanumeric characters and underscores")
+                    .Username()
                     .MustAsync(async (username, _) =>
                     {
                         var rulePredicates = Resolve<IUserBusinessRulePredicates>();
@@ -80,10 +77,7 @@ public sealed class SignInEndpoint : Endpoint<SignInEndpoint.SignInRequest, Resu
             });
 
             RuleFor(x => x.Password)
-                .MinimumLength(6)
-                .MaximumLength(32)
-                .Matches(@"^[a-zA-Z0-9_]+$")
-                .WithMessage("Password must contain only alphanumeric characters and underscores");
+                .Password();
         }
     }
 }
