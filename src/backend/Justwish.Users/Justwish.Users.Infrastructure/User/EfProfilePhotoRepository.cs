@@ -44,7 +44,7 @@ public class EfProfilePhotoRepository : IProfilePhotoRepository
         return photo is null ? Result<ProfilePhoto>.NotFound() : Result.Success(photo);
     }
 
-    public async Task<Result<Guid>> GetRandomSharedPhotoIdAsync()
+    public async Task<Result<Guid>> GetRandomSharedPhotoIdAsync(CancellationToken cancellationToken = default)
     {
         var photo = await _context.ProfilePhotos
             .Where(p => p.SharedPhotoAlias != null)
