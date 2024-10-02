@@ -25,4 +25,10 @@
       <PackageReference Include="Serilog.Sinks.Seq" Version="8.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Data\">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Folder>
+    </ItemGroup>
+
 </Project>

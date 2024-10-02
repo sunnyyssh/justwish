@@ -41,7 +41,7 @@ public sealed class JwtService : IJwtService
         if (!await _refreshTokenStorage.IsValidAsync(refreshToken))
         {
             _logger.LogDebug("Refresh token is not valid. Refresh failed.");
-            return Result.Invalid(new ValidationError("Invalid refresh token."));
+            return Result.Error("Invalid refresh token. Maybe it has expired.");
         }
         
         await _refreshTokenStorage.RemoveAsync(refreshToken);

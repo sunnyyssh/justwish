@@ -63,17 +63,15 @@ builder.Services.AddFastEndpoints(options =>
     }
 });
 
-builder.Services.Configure<JsonOptions>(opts =>
-{
-    opts.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-});
-
 var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapFastEndpoints();
+app.MapFastEndpoints(config => 
+{
+    config.Serializer.Options.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+});
 
 if (app.Environment.IsDevelopment())
 {
