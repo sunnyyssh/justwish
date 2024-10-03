@@ -24,6 +24,20 @@ services:
       - redis
       - seq
 
+  notifications-api: 
+    build:
+      context: ./backend/Justwish.Notifications/
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5002
+      SmtpEmailSenderOptions:Password: ${SmtpEmailSenderOptions__Password}
+      SmtpEmailSenderOptions:Host: mailhog
+      SmtpEmailSenderOptions:Port: 1025
+
+  mailhog:
+    image: mailhog/mailhog
+
   seq:
     image: datalust/seq
     environment:

@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Justwish.Notifications.Appl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Justwish.Notifications.Contracts", "Justwish.Notifications.Contracts\Justwish.Notifications.Contracts.csproj", "{CCB4D53C-E478-41E8-8D06-F83279023FB5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Justwish.Notifications.WebApi", "Justwish.Notifications.WebApi\Justwish.Notifications.WebApi.csproj", "{BA1C152F-F954-453C-A7FF-CC825EF49556}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Justwish.Notifications.Infrastructure", "Justwish.Notifications.Infrastructure\Justwish.Notifications.Infrastructure.csproj", "{19F0463C-7299-474B-BCAB-A4FC254C08AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{CCB4D53C-E478-41E8-8D06-F83279023FB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCB4D53C-E478-41E8-8D06-F83279023FB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCB4D53C-E478-41E8-8D06-F83279023FB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA1C152F-F954-453C-A7FF-CC825EF49556}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA1C152F-F954-453C-A7FF-CC825EF49556}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA1C152F-F954-453C-A7FF-CC825EF49556}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA1C152F-F954-453C-A7FF-CC825EF49556}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19F0463C-7299-474B-BCAB-A4FC254C08AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19F0463C-7299-474B-BCAB-A4FC254C08AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19F0463C-7299-474B-BCAB-A4FC254C08AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19F0463C-7299-474B-BCAB-A4FC254C08AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
