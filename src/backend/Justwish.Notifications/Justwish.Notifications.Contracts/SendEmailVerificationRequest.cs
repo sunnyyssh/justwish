@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 
-namespace Justwish.Users.Contracts;
+namespace Justwish.Notifications.Contracts;
 
 [EntityName("send_email_verification")]
 [MessageUrn("send_email_verification")]

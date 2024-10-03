@@ -1,4 +1,7 @@
-﻿using Justwish.Users.Infrastructure;
+﻿using System.Reflection;
+using System.Text.Json;
+using FastEndpoints;
+using Justwish.Users.Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -53,7 +56,6 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices((context, services) =>
         {
-
             var dbContextDescriptor =
             services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
             if (dbContextDescriptor is not null)
@@ -65,10 +67,6 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
             services.AddDbContext<ApplicationDbContext>(opts =>
             {
                 opts.EnableSensitiveDataLogging();
-                opts.ConfigureWarnings(warnings =>
-                {
-                    // warnings.Log(RelationalEventId.PendingModelChangesWarning);
-                });
 
                 var dataSourceBuilder = new NpgsqlDataSourceBuilder(_postgresContainer.GetConnectionString());
                 dataSourceBuilder.EnableDynamicJson();
@@ -87,7 +85,6 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
 
             services.AddMassTransitTestHarness(configure =>
             {
-                configure.AddConsumer<SendEmailVerificationConsumer>();
                 configure.UsingInMemory((ctx, inMemoryConfigure) =>
                 {
                     inMemoryConfigure.UseDelayedMessageScheduler();

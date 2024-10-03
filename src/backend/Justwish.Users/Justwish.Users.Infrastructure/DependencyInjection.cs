@@ -1,4 +1,5 @@
 ﻿using Justwish.Users.Domain;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +34,29 @@ public static class DependencyInjection
                 opts.UseNpgsql(dataSource);
             });
         }
+
+        services.AddMassTransit(config =>
+        {
+            config.SetEndpointNameFormatter(new SnakeCaseEndpointNameFormatter(includeNamespace: false));
+
+            config.UsingRabbitMq(static (ctx, conf) =>
+            {
+                var configuration = ctx.GetRequiredService<IConfiguration>();
+                string host = configuration.GetRequiredSection("RabbitMqOptions:Host").Value!;
+                string username = configuration.GetRequiredSection("RabbitMqOptions:User").Value!;
+                string password = configuration.GetRequiredSection("RabbitMqOptions:Password").Value!;
+
+                conf.Host(host, "/", h =>
+                {
+                    h.Username(username);
+                    h.Password(password);
+                });
+                
+                conf.Durable = true;
+
+                conf.ConfigureEndpoints(ctx, new SnakeCaseEndpointNameFormatter(includeNamespace: false));
+            });
+        });
 
         services.AddScoped<IUserRepository, EfUserRepository>();
         services.AddScoped<IProfilePhotoRepository, EfProfilePhotoRepository>();

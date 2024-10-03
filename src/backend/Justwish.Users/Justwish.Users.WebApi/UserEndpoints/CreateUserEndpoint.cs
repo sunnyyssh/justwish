@@ -36,7 +36,8 @@ public sealed class CreateUserEndpoint
         {
             return TypedResults.BadRequest("Email is not verified");
         }
-        return TypedResults.Ok(new RegisteredResponse(result.User.Id));
+        var response = new RegisteredResponse(result.User.Id);
+        return TypedResults.Ok(response);
     }
 
     public record RegistrationRequest(string Username, string Email, string Password);

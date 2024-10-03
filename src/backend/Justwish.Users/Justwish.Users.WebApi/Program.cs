@@ -33,26 +33,16 @@ builder.Services.AddAuthorizationBuilder()
         policy.RequireClaim(JwtTokenConstants.TokenTypeClaimName, JwtTokenConstants.AccessTokenType);
     });
 
+builder.Services.Configure<JsonOptions>(opts => 
+{
+    opts.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+});
+
 builder.Services.ConfigureOptions<JwtBearerConfigureOptions>();
 
 builder.Services.AddMediatR(config =>
 {
     config.RegisterServicesFromAssembly(typeof(CreateUserCommand).Assembly);
-});
-
-builder.Services.AddMassTransit(config =>
-{
-    // ATTENTION: You should make it not like that in the future.
-    if (builder.Environment.IsDevelopment())
-    {
-        config.UsingInMemory((ctx, inMemoryConfigure) =>
-        {
-            inMemoryConfigure.UseDelayedMessageScheduler();
-            inMemoryConfigure.ConfigureEndpoints(ctx);
-        });
-        config.AddConsumer<MockSendEmailVerificationConsumer>();
-        config.SetDefaultRequestTimeout(TimeSpan.FromSeconds(5));
-    }
 });
 
 builder.Services.AddFastEndpoints(options =>

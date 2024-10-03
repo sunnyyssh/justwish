@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Reflection;
 using FastEndpoints;
 using Justwish.Users.Contracts;
 using Justwish.Users.Domain;
@@ -43,6 +44,14 @@ public sealed class CreateUserTests : EndpointTestBase
         var response = await Client.POSTAsync<CreateUserEndpoint,
             CreateUserEndpoint.RegistrationRequest, CreateUserEndpoint.RegisteredResponse>(
             new CreateUserEndpoint.RegistrationRequest(username, email, password));
+
+        var stringContent = await response.Response.Content.ReadAsStringAsync();
+
+
+        var serOptsField = typeof(Config).GetField("SerOpts", BindingFlags.Static | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Could not find SerOpts field");
+        var serOpts = serOptsField.GetValue(null) as SerializerOptions
+            ?? throw new InvalidOperationException("SerOpts is null");
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.Response.StatusCode);
