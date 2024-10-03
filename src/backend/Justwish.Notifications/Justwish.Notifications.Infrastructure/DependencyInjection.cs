@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using Justwish.Notifications.Application;
+using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,11 +14,24 @@ public static class DependencyInjection
         services.AddMassTransit(config =>
         {
             config.AddConsumers(typeof(Application.DependencyInjection).Assembly);
+            config.SetEndpointNameFormatter(new SnakeCaseEndpointNameFormatter(includeNamespace: false));
 
-            config.UsingInMemory((ctx, inMemoryConfigure) =>
+            config.UsingRabbitMq(static (ctx, conf) => 
             {
-                inMemoryConfigure.UseDelayedMessageScheduler();
-                inMemoryConfigure.ConfigureEndpoints(ctx);
+                var configuration = ctx.GetRequiredService<IConfiguration>();
+                string host = configuration.GetRequiredSection("RabbitMqOptions:Host").Value!;
+                string username = configuration.GetRequiredSection("RabbitMqOptions:User").Value!;
+                string password = configuration.GetRequiredSection("RabbitMqOptions:Password").Value!;
+
+                conf.Host(host, "/", h => 
+                {
+                    h.Username(username);
+                    h.Password(password);
+                });
+
+                conf.Durable = true;
+                
+                conf.ConfigureEndpoints(ctx, new SnakeCaseEndpointNameFormatter(includeNamespace: false));
             });
         });
 

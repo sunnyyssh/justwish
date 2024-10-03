@@ -8,14 +8,14 @@ namespace Justwish.Users.Application;
 
 public sealed class SendEmailVerificationHandler : ICommandHandler<SendEmailVerificationCommand, Result>
 {
-    private readonly IRequestClient<SendEmailVerificationRequest> _requestClient;
     private readonly IEmailVerificationIssuer _emailVerificationIssuer;
     private readonly ILogger<SendEmailVerificationHandler> _logger;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public SendEmailVerificationHandler(IRequestClient<SendEmailVerificationRequest> requestClient,
+    public SendEmailVerificationHandler(IPublishEndpoint publishEndpoint,
         IEmailVerificationIssuer emailVerificationIssuer, ILogger<SendEmailVerificationHandler> logger)
     {
-        _requestClient = requestClient;
+        _publishEndpoint = publishEndpoint;
         _emailVerificationIssuer = emailVerificationIssuer;
         _logger = logger;
     }
@@ -30,18 +30,11 @@ public sealed class SendEmailVerificationHandler : ICommandHandler<SendEmailVeri
         
         _logger.LogInformation("Issued new verification code for {Email}", request.Email);
 
-        
-        var sendEmailRequest = new SendEmailVerificationRequest(request.Email, code);
-        var sendEmailResponse =
-            await _requestClient.GetResponse<SendEmailVerificationResponse>(sendEmailRequest, cancellationToken);
+        var sendEmailRequest = new SendEmailVerificationRequest(request.Email, code.Value);
 
-        if (!sendEmailResponse.Message.Success)
-        {
-            _logger.LogError("Failed to send email verification for {Email}", request.Email);
-            return Result.Error("Failed to send email verification code");
-        }
+        await _publishEndpoint.Publish(sendEmailRequest);
+        _logger.LogInformation("SendEmailVerificationRequest published");
         
-        _logger.LogInformation("Sent email verification for {Email}", request.Email);
         return Result.Success();
     }
 }

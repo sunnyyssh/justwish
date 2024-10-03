@@ -11,11 +11,4 @@ builder.Services
 
 var app = builder.Build();
 
-app.MapGet("/", async (IRequestClient<SendEmailVerificationRequest> client) =>
-{
-    var response = await client.GetResponse<SendEmailVerificationResponse>(
-        new SendEmailVerificationRequest("blit228@mail.ru", 1234));
-    return response.Message.Success ? "OK" : "FAIL";
-});
-
 app.Run();

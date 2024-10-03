@@ -20,9 +20,13 @@ services:
       ASPNETCORE_URLS: http://+:5001
       ConnectionStrings:RedisConnection: redis:6379
       ConnectionStrings:ApplicationConnection: Host=postgres;Port=5432;Username=postgres;Password=postgres;Database=Users;
+      RabbitMqOptions:Host: rabbitmq
+      RabbitMqOptions:User: user
+      RabbitMqOptions:Password: password
     depends_on:
       - redis
       - seq
+      - rabbitmq
 
   notifications-api: 
     build:
@@ -34,9 +38,24 @@ services:
       SmtpEmailSenderOptions:Password: ${SmtpEmailSenderOptions__Password}
       SmtpEmailSenderOptions:Host: mailhog
       SmtpEmailSenderOptions:Port: 1025
+      RabbitMqOptions:Host: rabbitmq
+      RabbitMqOptions:User: user
+      RabbitMqOptions:Password: password
+      Logging:LogLevel:MassTransit: Debug
+    depends_on:
+      - rabbitmq
 
   mailhog:
     image: mailhog/mailhog
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
   seq:
     image: datalust/seq
@@ -63,3 +82,4 @@ volumes:
   redis-data:
   postgres-data:
   seq_data:
+  rabbitmq_data:

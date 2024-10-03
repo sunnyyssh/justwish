@@ -20,7 +20,7 @@ public sealed class SendEmailCodeTests : EndpointTestBase
         
         // Assert
         Assert.True(response.Response.IsSuccessStatusCode, "Response was not about success");
-        Assert.True(await MassTransitTestHarness.Consumed.Any<SendEmailVerificationRequest>(),
+        Assert.True(await MassTransitTestHarness.Published.Any<SendEmailVerificationRequest>(),
             "SendEmailVerificationRequest was not sent");
     }
 
@@ -36,7 +36,7 @@ public sealed class SendEmailCodeTests : EndpointTestBase
         
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.Response.StatusCode);
-        Assert.False(await MassTransitTestHarness.Consumed.Any<SendEmailVerificationRequest>(),
+        Assert.False(await MassTransitTestHarness.Published.Any<SendEmailVerificationRequest>(),
             "Why the f**k was SendEmailVerificationRequest sent");
     }
 
@@ -52,7 +52,7 @@ public sealed class SendEmailCodeTests : EndpointTestBase
         
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.Response.StatusCode);
-        Assert.False(await MassTransitTestHarness.Consumed.Any<SendEmailVerificationRequest>(),
+        Assert.False(await MassTransitTestHarness.Published.Any<SendEmailVerificationRequest>(),
             "Why the f**k was SendEmailVerificationRequest sent");
     }
 }

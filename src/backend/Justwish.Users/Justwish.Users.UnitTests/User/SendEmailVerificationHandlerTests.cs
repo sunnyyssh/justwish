@@ -1,10 +1,8 @@
 ﻿using Ardalis.Result;
-using Castle.Core.Logging;
 using Justwish.Users.Application;
 using Justwish.Users.Contracts;
 using Justwish.Users.Domain;
 using MassTransit;
-using MassTransit.Clients;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -18,31 +16,28 @@ public sealed class SendEmailVerificationHandlerTests
         // Arrange
         const string email = "test@test.com";
         const int code = 6969;
-        
+
         var mockLogger = new Mock<ILogger<SendEmailVerificationHandler>>();
-        var mockRequestClient = MockRequestClient();
+        var mockPublishEndpoint = MockPublishEndpoint();
         var mockVerificationIssuer = MockVerificationIssuer(code);
 
-        var handler = new SendEmailVerificationHandler(mockRequestClient.Object, mockVerificationIssuer.Object,
-            mockLogger.Object);
-        
+        var handler = new SendEmailVerificationHandler(mockPublishEndpoint.Object,
+            mockVerificationIssuer.Object, mockLogger.Object);
+
         // Act
         await handler.Handle(new SendEmailVerificationCommand(email), default);
-        
+
         // Assert
-        VerifySentOnce(mockRequestClient);
+        VerifyPublishedOnce(mockPublishEndpoint);
     }
 
-    private static void VerifySentOnce(Mock<IRequestClient<SendEmailVerificationRequest>> mockRequestClient)
+    private static void VerifyPublishedOnce(Mock<IPublishEndpoint> mockPublishEndpoint)
     {
-        mockRequestClient.Verify(c =>
-            c.GetResponse<SendEmailVerificationResponse>(
-                It.IsAny<SendEmailVerificationRequest>(),
-                It.IsAny<CancellationToken>(), 
-                It.IsAny<RequestTimeout>()),
+        mockPublishEndpoint.Verify(c =>
+            c.Publish(It.IsAny<SendEmailVerificationRequest>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
-    
+
     private static Mock<IEmailVerificationIssuer> MockVerificationIssuer(int returningCode)
     {
         var mockIssuer = new Mock<IEmailVerificationIssuer>();
@@ -51,21 +46,12 @@ public sealed class SendEmailVerificationHandlerTests
         return mockIssuer;
     }
 
-    private static Mock<IRequestClient<SendEmailVerificationRequest>> MockRequestClient()
+    private static Mock<IPublishEndpoint> MockPublishEndpoint()
     {
-        var mockConsumeContext = new Mock<ConsumeContext<SendEmailVerificationResponse>>();
-        mockConsumeContext.SetupGet(c => c.Message)
-            .Returns(new SendEmailVerificationResponse(true));
-        
-        var mockRequestClient = new Mock<IRequestClient<SendEmailVerificationRequest>>();
-        
-        mockRequestClient.Setup(c =>
-                c.GetResponse<SendEmailVerificationResponse>(
-                    It.IsAny<SendEmailVerificationRequest>(),
-                    It.IsAny<CancellationToken>(), 
-                    It.IsAny<RequestTimeout>()))
-            .ReturnsAsync(new MessageResponse<SendEmailVerificationResponse>(mockConsumeContext.Object));
-
-        return mockRequestClient;
+        var mockPublishEndpoint = new Mock<IPublishEndpoint>();
+        mockPublishEndpoint.Setup(x => x.Publish(It.IsAny<SendEmailVerificationRequest>(),
+            It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        return mockPublishEndpoint;
     }
 }
