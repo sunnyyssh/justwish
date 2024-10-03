@@ -1,0 +1,1 @@
+# notifications-api must have environment variable with "SmtpEmailSenderOptions:Password" key
