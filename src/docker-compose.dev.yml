@@ -1,0 +1,85 @@
+name: justwish
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - users-api
+      - seq
+
+  users-api: 
+    build:
+      context: ./backend/Justwish.Users/
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5001
+      ConnectionStrings:RedisConnection: redis:6379
+      ConnectionStrings:ApplicationConnection: Host=postgres;Port=5432;Username=postgres;Password=postgres;Database=Users;
+      RabbitMqOptions:Host: rabbitmq
+      RabbitMqOptions:User: user
+      RabbitMqOptions:Password: password
+    depends_on:
+      - redis
+      - seq
+      - rabbitmq
+
+  notifications-api: 
+    build:
+      context: ./backend/Justwish.Notifications/
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5002
+      SmtpEmailSenderOptions:Password: ${SmtpEmailSenderOptions__Password}
+      SmtpEmailSenderOptions:Host: mailhog
+      SmtpEmailSenderOptions:Port: 1025
+      RabbitMqOptions:Host: rabbitmq
+      RabbitMqOptions:User: user
+      RabbitMqOptions:Password: password
+      Logging:LogLevel:MassTransit: Debug
+    depends_on:
+      - rabbitmq
+
+  mailhog:
+    image: mailhog/mailhog
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  seq:
+    image: datalust/seq
+    environment:
+      - ACCEPT_EULA=Y
+    volumes:
+      - seq_data:/data
+
+  redis:
+    image: redis:latest
+    volumes:
+      - redis-data:/data
+  
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=Users
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  
+volumes:
+  redis-data:
+  postgres-data:
+  seq_data:
+  rabbitmq_data:

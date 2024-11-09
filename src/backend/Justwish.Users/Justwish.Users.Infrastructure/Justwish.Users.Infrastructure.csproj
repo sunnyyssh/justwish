@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Justwish.Users.Application\Justwish.Users.Application.csproj" />
+      <ProjectReference Include="..\Justwish.Users.Contracts\Justwish.Users.Contracts.csproj" />
+      <ProjectReference Include="..\Justwish.Users.Domain\Justwish.Users.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.5" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0-rc.1.24451.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0-rc.1.24451.1">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0-rc.1.24452.1" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0-rc.1" />
+    </ItemGroup>
+
+</Project>
