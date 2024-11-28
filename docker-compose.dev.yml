@@ -13,7 +13,7 @@ services:
 
   users-api: 
     build:
-      context: ./backend/Justwish.Users/
+      context: ./backend/users/
       dockerfile: Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
@@ -27,12 +27,12 @@ services:
       - redis
       - seq
       - rabbitmq
-
   notifications-api: 
     build:
-      context: ./backend/Justwish.Notifications/
+      context: ./backend/notifications/
       dockerfile: Dockerfile
     environment:
+      #TODO: remove ASP NET CORE specific things
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:5002
       SmtpEmailSenderOptions:Password: ${SmtpEmailSenderOptions__Password}
