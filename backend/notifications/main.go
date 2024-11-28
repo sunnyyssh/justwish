@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -25,6 +26,7 @@ func FailOnError(err error, what string) {
 	}
 }
 
+// TODO: This doesn't work. Fix it.
 func main() {
 	config := loadConfigs()
 
@@ -36,6 +38,10 @@ func main() {
 	msgs := initializeQueueConsumer(channel, "send_email_verification")
 	smtpSender := initializeSmtpSender(config.Smtp)
 	consumeSendEmailQueue(smtpSender, msgs)
+
+	engine := gin.New()
+	engine.SetTrustedProxies([]string{"0.0.0.0"})
+	engine.Run(":5002")
 }
 
 func initializeAMQPConnection(amqpUrl string) *amqp.Connection {
@@ -77,7 +83,7 @@ func loadConfigs() *Config {
 			Address:      mustGetEnv("NOTIF_SMTP_ADDRESS"),
 			NoreplyEmail: mustGetEnv("NOTIF_SMTP_NOREPLY_EMAIL"),
 			FromName:     mustGetEnv("NOTIF_SMTP_FROM_NAME"),
-			Password:     mustGetEnv("NOTIF_SMTP_PASSWORD"),
+			// Password:     mustGetEnv("NOTIF_SMTP_PASSWORD"),
 		},
 		AmqpUrl: mustGetEnv("NOTIF_AMQP_URL"),
 	}

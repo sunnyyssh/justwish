@@ -15,6 +15,7 @@ func consumeSendEmailQueue(sender *SmtpSender, msgs <-chan amqp.Delivery) {
 	for i := 0; i < 5; i++ {
 		go func() {
 			for m := range msgs {
+				log.Println("message got via smtp: ", m)
 				handleSendEmailMess(sender, m)
 			}
 		}()
@@ -37,4 +38,5 @@ func handleSendEmailMess(sender *SmtpSender, m amqp.Delivery) {
 		log.Println("error while sending email: ", err)
 		return
 	}
+	log.Println("email sent")
 }

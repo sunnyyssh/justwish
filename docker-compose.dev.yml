@@ -24,24 +24,20 @@ services:
       RabbitMqOptions:User: user
       RabbitMqOptions:Password: password
     depends_on:
+      - postgres
       - redis
       - seq
       - rabbitmq
+
   notifications-api: 
     build:
       context: ./backend/notifications/
       dockerfile: Dockerfile
     environment:
-      #TODO: remove ASP NET CORE specific things
-      ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:5002
-      SmtpEmailSenderOptions:Password: ${SmtpEmailSenderOptions__Password}
-      SmtpEmailSenderOptions:Host: mailhog
-      SmtpEmailSenderOptions:Port: 1025
-      RabbitMqOptions:Host: rabbitmq
-      RabbitMqOptions:User: user
-      RabbitMqOptions:Password: password
-      Logging:LogLevel:MassTransit: Debug
+      NOTIF_SMTP_ADDRESS:       mailhog:1025
+      NOTIF_SMTP_NOREPLY_EMAIL: noreply.justwish@mail.ru
+      NOTIF_SMTP_FROM_NAME:     Justwish
+      NOTIF_AMQP_URL:           amqp://user:password@rabbitmq:5672
     depends_on:
       - rabbitmq
 
